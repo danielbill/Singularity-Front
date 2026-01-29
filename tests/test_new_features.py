@@ -134,21 +134,16 @@ class TestUniversalCrawler:
 
     def test_keywords_loaded(self):
         """测试关键词加载"""
-        from src.crawlers.universal import UniversalCrawler
-        from src.config.models import NewsSource
+        from src.crawlers.keywords_filter import _load_keywords
 
-        source = NewsSource(
-            id="cankaoxiaoxi",
-            name="参考消息",
-            type="official",
-            enabled=True,
-            url="https://example.com"
-        )
+        # 测试新的 legend/front 结构
+        keywords_data = _load_keywords()
 
-        crawler = UniversalCrawler(source)
-        keywords = crawler.keywords
-        assert isinstance(keywords, list)
-        assert len(keywords) > 0
+        assert isinstance(keywords_data, dict)
+        assert "legend" in keywords_data
+        assert "front" in keywords_data
+        assert "musk" in keywords_data["legend"]
+        assert len(keywords_data["front"]) > 0
 
 
 class TestParserInterface:

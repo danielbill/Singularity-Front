@@ -48,7 +48,8 @@
       "Bash(grep:*)",
       "Bash(dir:*)",
       "Bash(findstr:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pytest:*)"
     ]
   }
 }

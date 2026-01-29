@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇点时刻 - Singularity Moment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1E293B;
+            --secondary: #334155;
+            --cta: #22C55E;
+            --cta-glow: rgba(34, 197, 94, 0.5);
+            --background: #0F172A;
+            --text: #F8FAFC;
+            --text-muted: #94A3B8;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-border: rgba(148, 163, 184, 0.1);
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(34, 197, 94, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 197, 94, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glowing Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.4) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--card-border);
+            padding: 16px 0;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cta), #3B82F6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--cta);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 120px 32px 64px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 48px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Card Styling */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cta), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 40px rgba(34, 197, 94, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Left Panel - Legend Profile */
+        .left-panel {
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 24px;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cta), #3B82F6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 60px rgba(34, 197, 94, 0.4);
+        }
+
+        .avatar-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 3px solid var(--cta);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .profile-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--text), var(--cta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-title {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--cta);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text);
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 32px;
+            background: linear-gradient(180deg, var(--cta), #3B82F6);
+            border-radius: 2px;
+        }
+
+        /* News List */
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .news-item {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .news-item:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(34, 197, 94, 0.3);
+            transform: translateX(8px);
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .news-source {
+            font-size: 0.75rem;
+            color: var(--cta);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .news-time {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .news-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .news-summary {
+            font-size: 0.9375rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            color: var(--cta);
+            font-weight: 500;
+        }
+
+        /* Right Panel - Trending News */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--cta), #3B82F6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .company-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .company-card:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(34, 197, 94, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.15);
+        }
+
+        .company-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .company-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .company-name {
+            font-weight: 700;
+            font-size: 1.0625rem;
+            color: var(--text);
+        }
+
+        .company-category {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        .company-news {
+            font-size: 0.9375rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .load-more {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            border: 2px solid var(--cta);
+            border-radius: 12px;
+            color: var(--cta);
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+        }
+
+        .load-more:hover {
+            background: var(--cta);
+            color: var(--background);
+            box-shadow: 0 0 30px var(--cta-glow);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid var(--card-border);
+            padding: 48px 32px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .left-panel {
+                position: relative;
+                top: 0;
+            }
+
+            .company-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .header-content {
+                padding: 0 16px;
+            }
+
+            .main-container {
+                padding: 100px 16px 32px;
+                gap: 32px;
+            }
+
+            .profile-name {
+                font-size: 1.5rem;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .avatar-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .avatar {
+                font-size: 3rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--cta);
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">SINGULARITY</div>
+            <ul class="nav-links">
+                <li><a href="#legend">传奇动态</a></li>
+                <li><a href="#trending">前沿资讯</a></li>
+                <li><a href="#companies">创新公司</a></li>
+                <li><a href="#about">关于</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Left Panel - Legend Profile -->
+        <aside class="left-panel">
+            <div class="card" id="legend">
+                <div class="profile-header">
+                    <div class="avatar-container">
+                        <div class="avatar">EM</div>
+                        <div class="avatar-ring"></div>
+                    </div>
+                    <h1 class="profile-name">Elon Musk</h1>
+                    <p class="profile-title">特斯拉 · SpaceX · X · Neuralink</p>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-value">¥2.3T</div>
+                            <div class="stat-label">总市值</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">核心公司</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">156M</div>
+                            <div class="stat-label">关注者</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">传奇动态</h2>
+                <div class="news-list">
+                    <article class="news-item">
+                        <div class="news-meta">
+                            <span class="news-source">Reuters</span>
+                            <time class="news-time">2小时前</time>
+                        </div>
+                        <h3 class="news-title">SpaceX 星舰第四次试飞成功，成功实现海面软着陆</h3>
+                        <p class="news-summary">在德克萨斯州博卡奇卡发射场，SpaceX 成功完成星舰第四次轨道试飞。超重型助推器和飞船均成功降落在预定区域...</p>
+                        <div class="news-tags">
+                            <span class="tag">航天</span>
+                            <span class="tag">突破性进展</span>
+                        </div>
+                    </article>
+
+                    <article class="news-item">
+                        <div class="news-meta">
+                            <span class="news-source">Bloomberg</span>
+                            <time class="news-time">5小时前</time>
+                        </div>
+                        <h3 class="news-title">特斯拉FSD v12.5向全美用户推送，端到端神经网络表现惊艳</h3>
+                        <p class="news-summary">特斯拉最新全自动驾驶系统开始向全美用户推送。新版本完全采用端到端神经网络，无需人工编写的规则，城市道路驾驶能力大幅提升...</p>
+                        <div class="news-tags">
+                            <span class="tag">自动驾驶</span>
+                            <span class="tag">AI</span>
+                        </div>
+                    </article>
+
+                    <article class="news-item">
+                        <div class="news-meta">
+                            <span class="news-source">TechCrunch</span>
+                            <time class="news-time">1天前</time>
+                        </div>
+                        <h3 class="news-title">xAI 完成60亿美元融资，估值达240亿美元</h3>
+                        <p class="news-summary">马斯克旗下人工智能公司 xAI 宣布完成B轮融资，由红杉资本领投。资金将用于扩大Grok超级计算机集群，与OpenAI展开竞争...</p>
+                        <div class="news-tags">
+                            <span class="tag">融资</span>
+                            <span class="tag">AI</span>
+                        </div>
+                    </article>
+
+                    <article class="news-item">
+                        <div class="news-meta">
+                            <span class="news-source">WSJ</span>
+                            <time class="news-time">2天前</time>
+                        </div>
+                        <h3 class="news-title">Neuralink 首位患者用意念控制电脑，玩《文明6》整晚</h3>
+                        <p class="news-summary">Neuralink 首位人类试验参与者诺兰·阿博成功通过脑机接口控制电脑，不仅能够浏览网页、发邮件，还能整夜玩《文明6》...</p>
+                        <div class="news-tags">
+                            <span class="tag">脑机接口</span>
+                            <span class="tag">医疗突破</span>
+                        </div>
+                    </article>
+
+                    <article class="news-item">
+                        <div class="news-meta">
+                            <span class="news-source">CNBC</span>
+                            <time class="news-time">3天前</time>
+                        </div>
+                        <h3 class="news-title">特斯拉上海超级工厂年产突破95万辆，占全球半壁江山</h3>
+                        <p class="news-summary">特斯拉上海超级工厂2024年累计产量已突破95万辆，占特斯拉全球交付量的50%以上。新款Model Y Performance下线...</p>
+                        <div class="news-tags">
+                            <span class="tag">产能</span>
+                            <span class="tag">中国</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Panel - Trending News -->
+        <section class="right-panel">
+            <div class="card hero-card">
+                <h2 class="hero-title">奇点时刻</h2>
+                <p class="hero-description">追踪改变世界的奇点人物及其生态系统。在这里，我们见证伟大力量如何重塑文明的未来。</p>
+            </div>
+
+            <div class="card" id="trending">
+                <h2 class="section-title">前沿资讯</h2>
+                <div class="company-grid" id="companies">
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">OC</div>
+                            <div>
+                                <div class="company-name">OpenAI</div>
+                                <div class="company-category">人工智能</div>
+                            </div>
+                        </div>
+                        <p class="company-news">GPT-5研发进展顺利，多模态能力大幅提升，预计Q4发布</p>
+                    </article>
+
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">NA</div>
+                            <div>
+                                <div class="company-name">NVIDIA</div>
+                                <div class="company-category">芯片制造</div>
+                            </div>
+                        </div>
+                        <p class="company-news">H200 GPU全面量产，AI训练速度提升90%，市值突破3万亿美元</p>
+                    </article>
+
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">AS</div>
+                            <div>
+                                <div class="company-name">Anduril</div>
+                                <div class="company-category">国防科技</div>
+                            </div>
+                        </div>
+                        <p class="company-news">获五角大楼10亿美元合同，构建AI驱动的自主防御系统</p>
+                    </article>
+
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">SX</div>
+                            <div>
+                                <div class="company-name">SpaceX</div>
+                                <div class="company-category">商业航天</div>
+                            </div>
+                        </div>
+                        <p class="company-news">星链用户突破300万，年收入翻倍至100亿美元</p>
+                    </article>
+
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">ST</div>
+                            <div>
+                                <div class="company-name">Stellar</div>
+                                <div class="company-category">核聚变</div>
+                            </div>
+                        </div>
+                        <p class="company-news">实现净能量增益突破，商业化核聚变发电站2030年前投运</p>
+                    </article>
+
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">QL</div>
+                            <div>
+                                <div class="company-name">Quantinuum</div>
+                                <div class="company-category">量子计算</div>
+                            </div>
+                        </div>
+                        <p class="company-news">发布56量子位处理器，量子纠错能力提升1000倍</p>
+                    </article>
+
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">PL</div>
+                            <div>
+                                <div class="company-name">Pliops</div>
+                                <div class="company-category">存储技术</div>
+                            </div>
+                        </div>
+                        <p class="company-news">C轮融资3亿美元，AI数据中心存储效率提升10倍</p>
+                    </article>
+
+                    <article class="company-card">
+                        <div class="company-header">
+                            <div class="company-logo">HX</div>
+                            <div>
+                                <div class="company-name">Helion</div>
+                                <div class="company-category">清洁能源</div>
+                            </div>
+                        </div>
+                        <p class="company-news">与微软签署购电协议，全球首座商业核聚变电站2028年投运</p>
+                    </article>
+                </div>
+                <button class="load-more">加载更多资讯</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p class="footer-text">© 2024 奇点时刻 Singularity Moment. 追踪文明前沿的力量.</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Load more functionality (demo)
+        const loadMoreBtn = document.querySelector('.load-more');
+        loadMoreBtn.addEventListener('click', () => {
+            loadMoreBtn.textContent = '加载中...';
+            setTimeout(() => {
+                loadMoreBtn.textContent = '加载更多资讯';
+                // In production, this would fetch and append new items
+            }, 1000);
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Animate news items and company cards on scroll
+        document.querySelectorAll('.news-item, .company-card').forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = `opacity 0.6s ease ${index * 0.05}s, transform 0.6s ease ${index * 0.05}s`;
+            observer.observe(item);
+        });
+
+        // News item click handler
+        document.querySelectorAll('.news-item, .company-card').forEach(item => {
+            item.addEventListener('click', () => {
+                // In production, this would navigate to the full article
+                console.log('Article clicked:', item.querySelector('.news-title, .company-name').textContent);
+            });
+        });
+    </script>
+</body>
+</html>

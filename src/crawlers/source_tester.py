@@ -14,16 +14,6 @@ from datetime import datetime
 from ..config import ConfigReader
 
 
-# 源 ID 到解析器模块的映射
-PARSER_MODULE_MAP = {
-    "36kr": "_36kr",
-    "wallstreetcn-live": "wallstreetcn_live",
-    "wallstreetcn-news": "wallstreetcn_news",
-    "cls-telegraph": "cls_telegraph",
-    "cls-depth": "cls_depth",
-}
-
-
 class SourceTester:
     """新闻源测试器"""
 
@@ -83,18 +73,21 @@ class SourceTester:
         }
 
         try:
-            # 动态加载解析器
-            module_id = PARSER_MODULE_MAP.get(source.id, source.id)
-            module_name = f"src.crawlers.parsers.{module_id}"
+            # 动态加载解析器 - source.id 就是 parser 文件名
+            module_name = f"src.crawlers.parsers.{source.id}"
 
             module = importlib.import_module(module_name)
             parse_func = getattr(module, "parse")
 
+            # 构建 source_config（与 UniversalCrawler 一致）
+            source_config = self._source_to_dict(source)
+
             # 调用解析器
             articles = await parse_func(
                 response=None,
-                source_config={"id": source.id, "name": source.name},
-                client=self.client
+                source_config=source_config,
+                client=self.client,
+                limit=20  # 测试时固定 20 条
             )
 
             result["count"] = len(articles)
@@ -118,6 +111,21 @@ class SourceTester:
         except Exception as e:
             result["status"] = "error"
             result["message"] = f"错误: {e}"
+
+        return result
+
+    def _source_to_dict(self, source: Any) -> Dict[str, Any]:
+        """将配置对象转换为字典（与 UniversalCrawler 一致）"""
+        if hasattr(source, "dict"):
+            result = source.dict()
+        elif hasattr(source, "model_dump"):
+            result = source.model_dump()
+        else:
+            result = {"id": source.id, "name": source.name}
+
+        # 替换 URL 中的 {limit} 占位符
+        if "url" in result and "{limit}" in result["url"]:
+            result["url"] = result["url"].replace("{limit}", "20")
 
         return result
 

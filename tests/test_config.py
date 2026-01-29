@@ -43,9 +43,13 @@ class TestConfigReader:
         config = reader.load_news_keywords_config()
 
         assert config is not None
-        assert "people" in config
-        assert "companies" in config
-        assert "topics" in config
+        # 新结构: legend 和 front 两组
+        assert "legend" in config
+        assert "front" in config
+        # legend 按人物分组
+        assert "musk" in config["legend"]
+        assert "huang" in config["legend"]
+        assert "altman" in config["legend"]
 
     def test_load_news_sources_config(self):
         """测试加载新闻源配置"""

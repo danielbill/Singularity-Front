@@ -3,6 +3,7 @@
 使用通用爬虫框架 + 四层去重 + keywords筛选策略
 """
 
+import asyncio
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
@@ -42,18 +43,22 @@ async def run_crawl(source_id: str = None) -> Dict[str, Any]:
     # 加载配置
     reader = ConfigReader()
     sources_config = reader.load_news_sources_config()
+    crawler_config = reader.load_crawler_config()
 
     # 获取启用的新闻源
     enabled_sources = [s for s in sources_config.sources if s.enabled]
     if source_id:
         enabled_sources = [s for s in enabled_sources if s.id == source_id]
 
+    # 并发数配置
+    concurrent_limit = crawler_config.strategy.concurrent
+
     # 统计数据
     all_articles: List[Article] = []
     source_results = []
 
-    # 遍历新闻源执行抓取
-    for source in enabled_sources:
+    async def fetch_single_source(source):
+        """抓取单个新闻源"""
         crawler = None
         try:
             print(f"[Crawl] 开始抓取: {source.name} ({source.id})")
@@ -62,44 +67,72 @@ async def run_crawl(source_id: str = None) -> Dict[str, Any]:
             # 抓取文章
             articles = await crawler.fetch()
 
-            source_results.append(
-                {
-                    "source": source.name,
-                    "id": source.id,
-                    "fetched": len(articles),
-                    "status": "success",
-                }
-            )
-
-            all_articles.extend(articles)
             print(f"[Crawl] {source.name}: 抓取 {len(articles)} 条")
             # 打印每篇文章的详细信息
             for art in articles:
                 print(f"  - {art.title[:40]}... | {art.timestamp} | {art.url[:50]}...")
 
+            return {
+                "source": source.name,
+                "id": source.id,
+                "fetched": len(articles),
+                "status": "success",
+                "articles": articles
+            }
+
         except ImportError as e:
             print(f"[Crawl] 解析器不存在: {source.id} - {e}")
-            source_results.append(
-                {
-                    "source": source.name,
-                    "id": source.id,
-                    "status": "error",
-                    "error": f"解析器不存在: {str(e)}",
-                }
-            )
+            return {
+                "source": source.name,
+                "id": source.id,
+                "status": "error",
+                "error": f"解析器不存在: {str(e)}",
+                "articles": []
+            }
 
         except Exception as e:
             import traceback
-
             print(f"[Crawl] 抓取失败: {source.name} - {e}")
             traceback.print_exc()
-            source_results.append(
-                {"source": source.name, "id": source.id, "status": "error", "error": str(e)}
-            )
+            return {
+                "source": source.name,
+                "id": source.id,
+                "status": "error",
+                "error": str(e),
+                "articles": []
+            }
 
         finally:
             if crawler:
                 await crawler.close()
+
+    # 并发抓取（限制并发数）
+    semaphore = asyncio.Semaphore(concurrent_limit)
+
+    async def fetch_with_semaphore(source):
+        async with semaphore:
+            return await fetch_single_source(source)
+
+    results = await asyncio.gather(
+        *[fetch_with_semaphore(s) for s in enabled_sources],
+        return_exceptions=True
+    )
+
+    # 整理结果
+    for result in results:
+        if isinstance(result, Exception):
+            print(f"[Crawl] 任务异常: {result}")
+            continue
+
+        source_results.append({
+            "source": result["source"],
+            "id": result["id"],
+            "fetched": result["fetched"],
+            "status": result["status"]
+        })
+
+        if result["status"] == "success":
+            all_articles.extend(result["articles"])
 
     print(f"[Crawl] 总抓取: {len(all_articles)} 条")
 
@@ -124,8 +157,7 @@ async def run_crawl(source_id: str = None) -> Dict[str, Any]:
     db = TimelineDB(date.today())
     db.init_db()
 
-    # 读取存储配置
-    crawler_config = reader.load_crawler_config()
+    # 读取存储配置（已在开头读取 crawler_config）
     save_content = crawler_config.storage.save_content
 
     for article in deduped_articles:

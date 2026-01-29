@@ -32,6 +32,7 @@ class Article(BaseModel):
     file_path: Optional[str] = None
     tags: List[str] = Field(default_factory=list)
     entities: List[str] = Field(default_factory=list)
+    legend: Optional[str] = None  # 传奇人物 ID（如 musk, huang, altman）
 
     class Config:
         use_enum_values = True

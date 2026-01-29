@@ -30,19 +30,40 @@ class TimelineDB:
     def init_db(self) -> None:
         """初始化数据库表结构"""
         with self.get_connection() as conn:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS articles (
-                    id TEXT PRIMARY KEY,
-                    title TEXT NOT NULL,
-                    url TEXT UNIQUE,
-                    source TEXT NOT NULL,
-                    timestamp DATETIME NOT NULL,
-                    file_path TEXT,
-                    tags TEXT,
-                    entities TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
+            # 检查表是否存在
+            cursor = conn.execute("""
+                SELECT name FROM sqlite_master
+                WHERE type='table' AND name='articles'
             """)
+            table_exists = cursor.fetchone() is not None
+
+            if table_exists:
+                # 检查是否有 legend 列
+                cursor = conn.execute("PRAGMA table_info(articles)")
+                columns = {row["name"] for row in cursor.fetchall()}
+                if "legend" not in columns:
+                    # 添加 legend 列（迁移旧数据库）
+                    conn.execute("ALTER TABLE articles ADD COLUMN legend TEXT")
+                    print("[DB] 已添加 legend 列到现有表")
+            else:
+                # 创建新表
+                conn.execute("""
+                    CREATE TABLE articles (
+                        id TEXT PRIMARY KEY,
+                        title TEXT NOT NULL,
+                        url TEXT UNIQUE,
+                        source TEXT NOT NULL,
+                        timestamp DATETIME NOT NULL,
+                        file_path TEXT,
+                        tags TEXT,
+                        entities TEXT,
+                        legend TEXT,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                print("[DB] 已创建新表")
+
+            # 创建索引
             conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_articles_timestamp
                 ON articles(timestamp)
@@ -50,6 +71,10 @@ class TimelineDB:
             conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_articles_source
                 ON articles(source)
+            """)
+            conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_articles_legend
+                ON articles(legend)
             """)
             conn.commit()
 
@@ -74,8 +99,8 @@ class TimelineDB:
         with self.get_connection() as conn:
             conn.execute("""
                 INSERT OR REPLACE INTO articles
-                (id, title, url, source, timestamp, file_path, tags, entities)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (id, title, url, source, timestamp, file_path, tags, entities, legend)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 article.id,
                 article.title,
@@ -84,7 +109,8 @@ class TimelineDB:
                 timestamp_value,
                 article.file_path,
                 json.dumps(article.tags) if article.tags else None,
-                json.dumps(article.entities) if article.entities else None
+                json.dumps(article.entities) if article.entities else None,
+                article.legend
             ))
             conn.commit()
 

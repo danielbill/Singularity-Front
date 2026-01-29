@@ -7,7 +7,7 @@ sources:
     type: "official"
     enabled: true
     url: "https://china.cankaoxiaoxi.com/json/channel/{channel}/list.json"
-    channels: ["zhongguo", "guandian", "gj"]
+    channels: ["zhongguo"]
 
   - id: "thepaper"
     name: "澎湃新闻"
