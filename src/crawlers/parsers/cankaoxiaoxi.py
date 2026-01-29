@@ -16,13 +16,14 @@ CHANNELS = ["zhongguo", "guandian", "gj"]
 BASE_URL = "https://china.cankaoxiaoxi.com/json/channel/{}/list.json"
 
 
-async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None) -> List[Article]:
+async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None, limit: int = 20) -> List[Article]:
     """解析参考消息响应
 
     Args:
         response: HTTP 响应对象（注意：参考消息需要多频道抓取，此参数保留接口兼容）
         source_config: 新闻源配置
         client: HTTP 客户端（用于抓取多频道和正文）
+        limit: 每个频道抓取的条数限制
 
     Returns:
         文章列表
@@ -42,7 +43,7 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
             channel_response.raise_for_status()
             data = channel_response.json()
 
-            for item in data.get("list", []):
+            for item in data.get("list", [])[:limit]:
                 article_data = item["data"]
                 article = Article(
                     title=article_data["title"],

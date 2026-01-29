@@ -12,13 +12,14 @@ import json
 from ...models import Article, SourceType
 
 
-async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None) -> List[Article]:
+async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None, limit: int = 20) -> List[Article]:
     """解析凤凰网响应
 
     Args:
         response: HTTP 响应对象
         source_config: 新闻源配置
         client: HTTP 客户端
+        limit: 抓取的条数限制
 
     Returns:
         文章列表
@@ -42,7 +43,7 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
         if match:
             try:
                 all_data = json.loads(match.group(1))
-                hot_news = all_data.get("hotNews1", [])
+                hot_news = all_data.get("hotNews1", [])[:limit]
 
                 for item in hot_news:
                     title = item.get("title")

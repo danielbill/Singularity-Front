@@ -1,6 +1,6 @@
 """新闻抓取 API
 
-使用通用爬虫框架 + 三层去重策略
+使用通用爬虫框架 + 四层去重 + keywords筛选策略
 """
 
 from datetime import date, datetime
@@ -29,8 +29,9 @@ async def run_crawl(source_id: str = None) -> Dict[str, Any]:
 
     流程：
     1. 并发抓取所有启用的新闻源
-    2. 三层去重（时间、URL、标题相似度）
-    3. 统一入库
+    2. 四层去重（时间、URL、标题相似度、批次内）
+    3. keywords 筛选
+    4. 统一入库
 
     Args:
         source_id: 指定新闻源ID，None表示抓取所有启用的源
@@ -58,7 +59,7 @@ async def run_crawl(source_id: str = None) -> Dict[str, Any]:
             print(f"[Crawl] 开始抓取: {source.name} ({source.id})")
             crawler = UniversalCrawler(source)
 
-            # 抓取文章（已包含关键词过滤）
+            # 抓取文章
             articles = await crawler.fetch()
 
             source_results.append(
@@ -102,7 +103,7 @@ async def run_crawl(source_id: str = None) -> Dict[str, Any]:
 
     print(f"[Crawl] 总抓取: {len(all_articles)} 条")
 
-    # 三层去重
+    # 四层去重：时间 → URL → 标题 → 批次内
     original_count = len(all_articles)
     if all_articles:
         deduplicator = TextDeduplicator()
@@ -110,6 +111,13 @@ async def run_crawl(source_id: str = None) -> Dict[str, Any]:
         print(f"[Crawl] 去重: {original_count} -> {len(deduped_articles)} 条")
     else:
         deduped_articles = []
+
+    # 第五层：keywords 筛选
+    if deduped_articles:
+        from ..crawlers.keywords_filter import filter_by_keywords
+        keyword_filtered = filter_by_keywords(deduped_articles)
+        print(f"[Crawl] keywords筛选: {len(deduped_articles)} -> {len(keyword_filtered)} 条")
+        deduped_articles = keyword_filtered
 
     # 统一入库
     saved_count = 0

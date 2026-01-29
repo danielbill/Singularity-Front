@@ -48,23 +48,23 @@
 
 #### 官媒/权威媒体（优先使用）
 
-| 来源 | 类型 | API/URL | 说明 |
-|------|------|---------|------|
+| 来源     | 类型 | API/URL                                                           | 说明                    |
+| -------- | ---- | ----------------------------------------------------------------- | ----------------------- |
 | 参考消息 | 官媒 | `https://china.cankaoxiaoxi.com/json/channel/{channel}/list.json` | 新华社主办，有 JSON API |
-| 澎湃新闻 | 权威 | `https://cache.thepaper.cn/contentapi/wwwIndex/rightSidebar` | 上海报业集团 |
-| 腾讯新闻 | 门户 | `https://i.news.qq.com/web_backend/v2/getTagInfo?tagId=xxx` | 综合早报 |
-| 凤凰网 | 门户 | `https://www.ifeng.com/` (页面数据) | 热点新闻 |
+| 澎湃新闻 | 权威 | `https://cache.thepaper.cn/contentapi/wwwIndex/rightSidebar`      | 上海报业集团            |
+| 腾讯新闻 | 门户 | `https://i.news.qq.com/web_backend/v2/getTagInfo?tagId=xxx`       | 综合早报                |
+| 凤凰网   | 门户 | `https://www.ifeng.com/` (页面数据)                               | 热点新闻                |
 
 #### 财经/科技媒体
 
-| 来源 | 类型 | API/URL | 说明 |
-|------|------|---------|------|
-| 华尔街见闻 | 财经 | `https://api-one.wallstcn.com/apiv1/content/lives` | 实时快讯 |
-| 金十数据 | 财经 | `https://www.jin10.com/flash_newest.js` | 财经快讯 |
-| 36氪 | 科技 | `https://www.36kr.com/newsflashes` | 科创快讯 |
-| 格隆汇 | 财经 | `https://www.gelonghui.com/news/` | 港股财经 |
-| 雪球 | 财经 | `https://stock.xueqiu.com/v5/stock/hot_stock/list.json` | 热门股票 |
-| Fastbull | 财经 | `https://www.fastbull.com/cn/express-news` | 财经快讯 |
+| 来源       | 类型 | API/URL                                                 | 说明     |
+| ---------- | ---- | ------------------------------------------------------- | -------- |
+| 华尔街见闻 | 财经 | `https://api-one.wallstcn.com/apiv1/content/lives`      | 实时快讯 |
+| 金十数据   | 财经 | `https://www.jin10.com/flash_newest.js`                 | 财经快讯 |
+| 36氪       | 科技 | `https://www.36kr.com/newsflashes`                      | 科创快讯 |
+| 格隆汇     | 财经 | `https://www.gelonghui.com/news/`                       | 港股财经 |
+| 雪球       | 财经 | `https://stock.xueqiu.com/v5/stock/hot_stock/list.json` | 热门股票 |
+| Fastbull   | 财经 | `https://www.fastbull.com/cn/express-news`              | 财经快讯 |
 
 #### MVP 新闻数据源选择
 
@@ -119,13 +119,13 @@
 ## 技术架构
 
 ### 技术栈
-| 层级 | 技术选择 |
-|------|----------|
-| 编程语言 | Python |
+| 层级     | 技术选择            |
+| -------- | ------------------- |
+| 编程语言 | Python              |
 | 爬虫框架 | Scrapy / Playwright |
-| Web 框架 | FastAPI |
-| 数据库 | SQLite |
-| 任务调度 | APScheduler |
+| Web 框架 | FastAPI             |
+| 数据库   | SQLite              |
+| 任务调度 | APScheduler         |
 
 ---
 
@@ -246,10 +246,23 @@ CREATE TABLE relations (
 ## 核心功能模块
 
 ### 1. 官媒新闻爬虫
-- 从国内官媒抓取马斯克相关新闻
-- 支持多个来源（待分析 newsnow 项目确定）
+- 从国内官媒抓取keywords相关新闻
+- 支持多个来源
 - 提取文章元数据和正文
 - 自动生成标签和实体关联
+- 新闻抓取逻辑如下：
+    - 预设每小时从各新闻源抓取一次数据，自动抓取最小间隔15分钟，手动刷新最小间隔30秒
+    - 只抓取当日新闻
+    - 内存保存抓取新闻的url 和 title，进行排重
+    - 每次从各个新闻源抓取限制为20条，该值可设置
+    - 排重流程：
+        1、当日新闻，时间排重
+        2、url排重，已存在内存中的丢弃
+        3、title排重，已存在内存中的丢弃，使用近似算法排重，得到新增新闻
+        4、对新增新闻再进行title排重（本批次文章互相去重）
+        5、最后使用keywords筛选本次新增新闻
+        
+    
 
 ### 2. 财报数据抓取
 - 通过财经 API 获取美股财报数据
@@ -283,26 +296,11 @@ CREATE TABLE relations (
 
 这是一个**图谱式/关联式**的阅读体验，不是简单的时间线。
 
----
-
-## MVP 功能清单
-
-- [x] 确定存储结构（Timeline + 元数据/文件分离）
-- [ ] 分析 newsnow 项目，提取可用数据源
-- [ ] 设计数据库 Schema
-- [ ] 实现新闻爬虫（单一来源验证）
-- [ ] 实现公司档案管理
-- [ ] 实现财报 API 集成
-- [ ] 实现定时任务调度
-- [ ] 实现 FastAPI Web 界面
-- [ ] 部署测试
 
 ---
 
 ## 待确认事项
 
-1. **数据源**：分析 `D:\awesome_projects\newsnow` 后确定具体的官媒列表
-2. **财经 API**：确定使用哪个 API 服务
 3. **数据关联**：智能关联方案后续讨论
 4. **全文搜索**：是否需要 FTS5 或外部搜索引擎
 

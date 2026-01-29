@@ -11,13 +11,14 @@ from bs4 import BeautifulSoup
 from ...models import Article, SourceType
 
 
-async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None) -> List[Article]:
+async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None, limit: int = 20) -> List[Article]:
     """解析36氪快讯响应
 
     Args:
         response: HTTP 响应对象
         source_config: 新闻源配置
         client: HTTP 客户端
+        limit: 抓取的条数限制
 
     Returns:
         文章列表
@@ -36,7 +37,7 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
         resp.raise_for_status()
 
         soup = BeautifulSoup(resp.text, "html.parser")
-        items = soup.select(".newsflash-item")
+        items = soup.select(".newsflash-item")[:limit]
 
         for item in items:
             try:

@@ -88,6 +88,7 @@ class StrategyConfig(BaseModel):
     interval: int  # 抓取间隔（秒）
     min_interval: int  # 最小抓取间隔限制
     concurrent: int  # 并发抓取数量
+    news_batch_limit: int = 20  # 每个新闻源每次抓取的条数限制
 
 
 class NetworkConfig(BaseModel):

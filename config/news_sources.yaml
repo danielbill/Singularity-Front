@@ -32,13 +32,13 @@ sources:
     name: "华尔街见闻快讯"
     type: "financial"
     enabled: true
-    url: "https://api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit=30"
+    url: "https://api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit={limit}"
 
   - id: "wallstreetcn-news"
     name: "华尔街见闻资讯"
     type: "financial"
     enabled: true
-    url: "https://api-one.wallstcn.com/apiv1/content/information-flow?channel=global-channel&accept=article&limit=30"
+    url: "https://api-one.wallstcn.com/apiv1/content/information-flow?channel=global-channel&accept=article&limit={limit}"
 
   - id: "cls-telegraph"
     name: "财联社电报"

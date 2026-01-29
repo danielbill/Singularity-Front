@@ -3,8 +3,9 @@
 # 抓取策略
 strategy:
   interval: 900       # 抓取间隔（秒），默认 15分钟
-  min_interval: 900   # 最小抓取间隔（秒），15分钟硬编码限制
+  min_interval: 900   # 最小抓取间隔（秒），15分钟
   concurrent: 3       # 并发抓取数量
+  news_batch_limit: 20 #从各新闻源每次抓取新闻的条数限制
 
 # 网络配置
 network:

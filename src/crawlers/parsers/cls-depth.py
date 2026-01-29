@@ -1,6 +1,7 @@
-"""财联社电报解析器
+"""财联社深度文章解析器
 
-API: https://www.cls.cn/nodeapi/updateTelegraphList
+API: https://www.cls.cn/v3/depth/home/assembled/1000
+深度文章板块，包含更详细的财经分析
 """
 
 from typing import List, Dict, Any
@@ -10,13 +11,14 @@ from datetime import datetime
 from ...models import Article, SourceType
 
 
-async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None) -> List[Article]:
-    """解析财联社电报响应
+async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None, limit: int = 20) -> List[Article]:
+    """解析财联社深度文章响应
 
     Args:
         response: HTTP 响应对象
         source_config: 新闻源配置
         client: HTTP 客户端
+        limit: 抓取的条数限制
 
     Returns:
         文章列表
@@ -28,18 +30,14 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
     articles = []
 
     try:
-        url = "https://www.cls.cn/nodeapi/updateTelegraphList"
+        url = "https://www.cls.cn/v3/depth/home/assembled/1000"
         resp = await client.get(url, timeout=30)
         resp.raise_for_status()
         data = resp.json()
 
-        telegraph_list = data.get("data", {}).get("roll_data", [])
+        depth_list = data.get("data", {}).get("depth_list", [])[:limit]
 
-        for item in telegraph_list:
-            # 过滤广告
-            if item.get("is_ad"):
-                continue
-
+        for item in depth_list:
             item_id = item.get("id")
             title = item.get("title") or item.get("brief")
             share_url = item.get("shareurl")
@@ -60,13 +58,13 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
             article = Article(
                 title=title,
                 url=url,
-                source=SourceType.CLS_TELEGRAPH,
+                source=SourceType.CLS_DEPTH,
                 timestamp=timestamp
             )
             articles.append(article)
 
     except Exception as e:
-        print(f"[CLSTelegraph] Error: {e}")
+        print(f"[CLSDepth] Error: {e}")
 
     return articles
 
@@ -82,7 +80,7 @@ async def fetch_content(url: str, client: AsyncClient) -> str:
 
         content_div = soup.find("div", class_="content") or \
                       soup.find("div", class_="article-content") or \
-                      soup.find("div", class_="telegraph-content")
+                      soup.find("article")
 
         if content_div:
             paragraphs = content_div.find_all("p")

@@ -1,7 +1,6 @@
-"""财联社深度文章解析器
+"""华尔街见闻快讯解析器
 
-API: https://www.cls.cn/v3/depth/home/assembled/1000
-深度文章板块，包含更详细的财经分析
+API: https://api-one.wallstcn.com/apiv1/content/lives
 """
 
 from typing import List, Dict, Any
@@ -11,8 +10,8 @@ from datetime import datetime
 from ...models import Article, SourceType
 
 
-async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None) -> List[Article]:
-    """解析财联社深度文章响应
+async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None, limit: int = 20) -> List[Article]:
+    """解析华尔街见闻快讯响应
 
     Args:
         response: HTTP 响应对象
@@ -29,41 +28,46 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
     articles = []
 
     try:
-        url = "https://www.cls.cn/v3/depth/home/assembled/1000"
+        url = source_config["url"]
         resp = await client.get(url, timeout=30)
         resp.raise_for_status()
         data = resp.json()
 
-        depth_list = data.get("data", {}).get("depth_list", [])
+        # items 是一个 list
+        items = data.get("data", {}).get("items", [])
 
-        for item in depth_list:
-            item_id = item.get("id")
-            title = item.get("title") or item.get("brief")
-            share_url = item.get("shareurl")
-            ctime = item.get("ctime")
+        print(f"[WallstreetcnLive] 返回 {len(items)} 条")
+        for i, item in enumerate(items[:5]):
+            title = item.get("title") or item.get("content_text") or item.get("content_short")
+            uri = item.get("uri")
+            display_time = item.get("display_time")
+            print(f"  [{i}] title={title[:40]}..., uri={uri}, time={display_time}")
 
-            if not item_id or not title:
+        for item in items:
+            title = item.get("title") or item.get("content_text") or item.get("content_short")
+            uri = item.get("uri")
+            display_time = item.get("display_time")
+
+            if not title or not uri:
                 continue
 
             timestamp = datetime.now()
-            if ctime:
+            if display_time:
                 try:
-                    timestamp = datetime.fromtimestamp(int(ctime))
+                    timestamp = datetime.fromtimestamp(int(display_time))
                 except (ValueError, TypeError):
                     pass
 
-            url = share_url or f"https://www.cls.cn/detail/{item_id}"
-
             article = Article(
                 title=title,
-                url=url,
-                source=SourceType.CLS_DEPTH,
+                url=uri,
+                source=SourceType.WALLSTREETCN_LIVE,
                 timestamp=timestamp
             )
             articles.append(article)
 
     except Exception as e:
-        print(f"[CLSDepth] Error: {e}")
+        print(f"[WallstreetcnLive] Error: {e}")
 
     return articles
 
@@ -77,8 +81,8 @@ async def fetch_content(url: str, client: AsyncClient) -> str:
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(response.text, "html.parser")
 
-        content_div = soup.find("div", class_="content") or \
-                      soup.find("div", class_="article-content") or \
+        content_div = soup.find("div", class_="article-content") or \
+                      soup.find("div", class_="content") or \
                       soup.find("article")
 
         if content_div:

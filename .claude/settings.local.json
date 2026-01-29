@@ -44,7 +44,11 @@
       "Bash(powershell:*)",
       "Bash(tasklist)",
       "Bash(cmd //c \"taskkill /F /IM python.exe\")",
-      "Bash(dir \"d:\\\\ai_tools\\\\Singularity-Front\\\\data\\\\db\")"
+      "Bash(dir \"d:\\\\ai_tools\\\\Singularity-Front\\\\data\\\\db\")",
+      "Bash(grep:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(ls:*)"
     ]
   }
 }

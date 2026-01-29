@@ -13,31 +13,34 @@ import httpx
 from pathlib import Path
 
 from ..models import Article, SourceType
-from ..config import ConfigReader
-
-
-# 源 ID 到解析器模块的映射（处理特殊命名）
-PARSER_MODULE_MAP = {
-    "36kr": "_36kr",
-    "wallstreetcn-live": "wallstreetcn_live",
-    "wallstreetcn-news": "wallstreetcn_news",
-    "cls-telegraph": "cls_telegraph",
-    "cls-depth": "cls_depth",
-}
+from ..config.reader import ConfigReader
 
 
 class UniversalCrawler:
     """通用爬虫 - 根据配置自动加载解析器"""
 
-    def __init__(self, source_config: Any, config_dir: str = "config"):
+    def __init__(self, source_config: Any, config_dir: str = "config", news_batch_limit: int = None):
         """初始化通用爬虫
 
         Args:
             source_config: 新闻源配置对象
             config_dir: 配置文件目录
+            news_batch_limit: 每次抓取的条数限制（可选，默认从配置读取）
         """
         self.source = source_config
         self.config_dir = config_dir
+
+        # 读取 limit 配置
+        if news_batch_limit is None:
+            try:
+                reader = ConfigReader(config_dir)
+                crawler_config = reader.load_crawler_config()
+                news_batch_limit = crawler_config.strategy.news_batch_limit
+            except Exception as e:
+                print(f"Warning: Failed to load news_batch_limit: {e}")
+                news_batch_limit = 20  # 默认值
+        self.news_batch_limit = news_batch_limit
+
         self.client = httpx.AsyncClient(
             timeout=30,
             headers={
@@ -45,45 +48,11 @@ class UniversalCrawler:
             }
         )
 
-        # 加载关键词配置
-        self._keywords = self._load_keywords()
-
-    def _load_keywords(self) -> List[str]:
-        """从配置文件加载关键词"""
-        try:
-            reader = ConfigReader(self.config_dir)
-            config = reader.load_news_keywords_config()
-
-            # 展平所有关键词
-            all_keywords = set()
-
-            # 人物关键词
-            for person_keywords in config.get("people", {}).values():
-                all_keywords.update(person_keywords)
-
-            # 公司关键词
-            for company_keywords in config.get("companies", {}).values():
-                all_keywords.update(company_keywords)
-
-            # 话题关键词
-            for topic_group in config.get("topics", []):
-                all_keywords.update(topic_group)
-
-            return list(all_keywords)
-        except Exception as e:
-            print(f"Warning: Failed to load keywords config: {e}")
-            return []
-
-    @property
-    def keywords(self) -> List[str]:
-        """获取所有关键词（用于过滤）"""
-        return self._keywords
-
     async def fetch(self) -> List[Article]:
         """抓取并解析文章
 
         Returns:
-            文章列表（已过滤关键词）
+            文章列表
         """
         # 1. 动态加载解析器
         parser = self._load_parser()
@@ -92,29 +61,33 @@ class UniversalCrawler:
         articles = await parser.parse(
             response=None,  # 大多数解析器不需要此参数
             source_config=self._source_to_dict(),
-            client=self.client
+            client=self.client,
+            limit=self.news_batch_limit
         )
 
         # 3. 设置文章来源
         for article in articles:
             article.source = SourceType(self.source.id)
 
-        # 4. 关键词过滤
-        filtered = self._filter_keywords(articles)
+        # 4. 获取文章正文
+        await self._fetch_contents(articles)
 
-        # 5. 获取文章正文
-        await self._fetch_contents(filtered)
-
-        return filtered
+        return articles
 
     def _source_to_dict(self) -> Dict[str, Any]:
         """将配置对象转换为字典"""
         if hasattr(self.source, "dict"):
-            return self.source.dict()
+            result = self.source.dict()
         elif hasattr(self.source, "model_dump"):
-            return self.source.model_dump()
+            result = self.source.model_dump()
         else:
-            return {"id": self.source.id, "name": self.source.name}
+            result = {"id": self.source.id, "name": self.source.name}
+
+        # 替换 URL 中的 {limit} 占位符
+        if "url" in result and "{limit}" in result["url"]:
+            result["url"] = result["url"].replace("{limit}", str(self.news_batch_limit))
+
+        return result
 
     def _load_parser(self):
         """动态加载解析器模块
@@ -122,33 +95,13 @@ class UniversalCrawler:
         Returns:
             解析器模块
         """
-        # 使用映射获取模块名
-        module_id = PARSER_MODULE_MAP.get(self.source.id, self.source.id)
-        module_name = f"src.crawlers.parsers.{module_id}"
+        # 直接使用 source.id 作为模块名
+        module_name = f"src.crawlers.parsers.{self.source.id}"
         try:
             module = importlib.import_module(module_name)
             return module
         except ImportError as e:
-            raise ImportError(f"解析器不存在: {module_name}. 请创建 src/crawlers/parsers/{module_id}.py") from e
-
-    def _filter_keywords(self, articles: List[Article]) -> List[Article]:
-        """根据关键词过滤文章"""
-        filtered = []
-        all_keywords = self.keywords
-
-        print(f"[Filter] 关键词数量: {len(all_keywords)}, 前10个: {all_keywords[:10]}")
-
-        for article in articles:
-            # 检查标题和 URL
-            text_to_check = f"{article.title} {article.url}".lower()
-            if any(kw.lower() in text_to_check for kw in all_keywords):
-                filtered.append(article)
-            else:
-                if len(filtered) < 3:  # 只打印前几个没匹配的
-                    print(f"[Filter] 未匹配: {article.title[:40]}...")
-
-        print(f"[Filter] 过滤后剩余: {len(filtered)}/{len(articles)}")
-        return filtered
+            raise ImportError(f"解析器不存在: {module_name}. 请创建 src/crawlers/parsers/{self.source.id}.py") from e
 
     async def _fetch_contents(self, articles: List[Article]):
         """获取文章正文内容"""

@@ -10,13 +10,14 @@ from datetime import datetime
 from ...models import Article, SourceType
 
 
-async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None) -> List[Article]:
+async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None, limit: int = 20) -> List[Article]:
     """解析澎湃新闻响应
 
     Args:
         response: HTTP 响应对象
         source_config: 新闻源配置
         client: HTTP 客户端
+        limit: 抓取的条数限制
 
     Returns:
         文章列表
@@ -34,7 +35,7 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
         data = resp.json()
 
         # 获取热门新闻列表
-        hot_news = data.get("data", {}).get("hotNews", [])
+        hot_news = data.get("data", {}).get("hotNews", [])[:limit]
 
         for item in hot_news:
             cont_id = item.get("contId")

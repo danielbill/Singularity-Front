@@ -1,6 +1,7 @@
-"""华尔街见闻快讯解析器
+"""华尔街见闻资讯流解析器
 
-API: https://api-one.wallstcn.com/apiv1/content/lives
+API: https://api-one.wallstcn.com/apiv1/content/information-flow
+资讯流包含深度文章，软银投资 OpenAI 等重要新闻在这里
 """
 
 from typing import List, Dict, Any
@@ -10,13 +11,14 @@ from datetime import datetime
 from ...models import Article, SourceType
 
 
-async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None) -> List[Article]:
-    """解析华尔街见闻快讯响应
+async def parse(response: Response, source_config: Dict[str, Any], client: AsyncClient = None, limit: int = 20) -> List[Article]:
+    """解析华尔街见闻资讯流响应
 
     Args:
         response: HTTP 响应对象
         source_config: 新闻源配置
         client: HTTP 客户端
+        limit: 抓取的条数限制
 
     Returns:
         文章列表
@@ -28,25 +30,24 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
     articles = []
 
     try:
-        url = "https://api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit=30"
+        url = source_config["url"]
         resp = await client.get(url, timeout=30)
         resp.raise_for_status()
         data = resp.json()
 
-        # items 是一个 list
         items = data.get("data", {}).get("items", [])
 
-        print(f"[WallstreetcnLive] 返回 {len(items)} 条")
-        for i, item in enumerate(items[:5]):
-            title = item.get("title") or item.get("content_text") or item.get("content_short")
-            uri = item.get("uri")
-            display_time = item.get("display_time")
-            print(f"  [{i}] title={title[:40]}..., uri={uri}, time={display_time}")
-
         for item in items:
-            title = item.get("title") or item.get("content_text") or item.get("content_short")
-            uri = item.get("uri")
-            display_time = item.get("display_time")
+            resource_type = item.get("resource_type")
+            resource = item.get("resource", {})
+
+            # 过滤广告和主题
+            if resource_type in ("theme", "ad") or resource.get("type") == "live":
+                continue
+
+            title = resource.get("title") or resource.get("content_short")
+            uri = resource.get("uri")
+            display_time = resource.get("display_time")
 
             if not title or not uri:
                 continue
@@ -61,13 +62,13 @@ async def parse(response: Response, source_config: Dict[str, Any], client: Async
             article = Article(
                 title=title,
                 url=uri,
-                source=SourceType.WALLSTREETCN_LIVE,
+                source=SourceType.WALLSTREETCN_NEWS,
                 timestamp=timestamp
             )
             articles.append(article)
 
     except Exception as e:
-        print(f"[WallstreetcnLive] Error: {e}")
+        print(f"[WallstreetcnNews] Error: {e}")
 
     return articles
 

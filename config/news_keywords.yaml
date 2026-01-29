@@ -23,7 +23,6 @@ people:
     - "黄仁勋"
     - "Jensen Huang"
     - "老黄"
-    - "皮衣刀客"
 
   altman:
     - "奥尔特曼"
@@ -41,28 +40,36 @@ companies:
     - "SpaceX"
     - "星舰"
     - "Starship"
+    - "猎鹰"
     - "星链"
     - "Starlink"
-    - "猎鹰"
-
-  X:
-    - "X Corp"
-    - "Twitter"
 
   XAI:
     - "xAI"
     - "Grok"
 
-  NVDA:
+  NVIDIA:
     - "英伟达"
     - "NVIDIA"
     - "NVDA"
-    - "辉达"
+
+  Google:
+    - "google"
+    - "TPU"
+    - "Ironwood"
+
 
   OPENAI:
     - "OpenAI"
     - "ChatGPT"
-    - "GPT"
+  
+  Neuralink:
+    - "Neuralink"
+
+  华为:
+    - "huawei"
+    - "华为"
+    - "任正非"
 
 # 话题关键词（数组格式仅用于分组，匹配时命中任意一个即可）
 topics:
@@ -79,7 +86,6 @@ topics:
   - ["CUDA", "英伟达生态"]
   - ["Blackwell", "H100", "H200"]
   - ["AI 芯片", "算力"]
-  - ["数据中心"]
 
   # AI 通用
   - ["AGI", "通用人工智能"]
@@ -94,10 +100,22 @@ topics:
   - ["ChatGPT", "claude", "gemini"]
 
   # 大模型工具
-  - ["claude code", "opencode", "claudecode","Clawdbot"]
+  - ["claude code", "opencode", "claudecode", "Clawdbot"]
 
   # 机器人
-  - ["人形机器人", "具身", "宇树","开元"]
+  - ["人形机器人", "具身智能", "宇树","开元"]
 
   # 太空产业
   - ["卫星", "星链", "星座计划","低轨","太空光伏","太空算力","钙钛矿"]
+
+  # 中国商业航天6小龙
+  - ["蓝箭航天", "中科宇航", "星河动力","天兵科技","星际荣耀","东方空间"]
+
+  # 脑机接口
+  - ["脑机接口", "数字永生", "意识上传","脑机交互","脑机融合"]
+
+  # 先进GPU类型
+  - ["lpu","Ironwood","maia","Trainium"]
+
+  # 国产GUP
+  - ["昇腾","寒武纪","摩尔线程","壁仞","沐曦","燧原","天数智芯","海光","芯动科技","登临科技","兆芯","芯瞳","曦望"]
