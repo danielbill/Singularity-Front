@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>core-minimalism-portfolio - Full Page Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+
+  /* ===== 全局变量 ===== */
+  :root {
+    --pf-bg: #FAFAFA;
+    --pf-text: #111111;
+    --pf-text-muted: #666666;
+    --pf-border: #E0E0E0;
+    --pf-white: #FFFFFF;
+    --pf-spacing-xs: 24px;
+    --pf-spacing-md: 48px;
+    --pf-spacing-lg: 96px;
+  }
+
+  /* ===== 全局重置 ===== */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--pf-bg);
+    color: var(--pf-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ===== 容器 ===== */
+  .pf-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--pf-spacing-xs);
+  }
+
+  /* ===== 頂部导航 ===== */
+  .pf-header {
+    position: sticky;
+    top: 0;
+    background: rgba(250, 250, 250, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--pf-border);
+    z-index: 100;
+  }
+
+  .pf-header .pf-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 72px;
+  }
+
+  .pf-logo {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--pf-text);
+  }
+
+  .pf-nav {
+    display: flex;
+    gap: var(--pf-spacing-xs);
+  }
+
+  .pf-nav a {
+    color: var(--pf-text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    transition: color 0.2s ease;
+  }
+
+  .pf-nav a:hover {
+    color: var(--pf-text);
+  }
+
+  /* ===== 英雄区塊 ===== */
+  .pf-hero {
+    padding: var(--pf-spacing-lg) 0;
+    border-bottom: 1px solid var(--pf-border);
+  }
+
+  .pf-hero-title {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color: var(--pf-text);
+  }
+
+  .pf-hero-subtitle {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--pf-text-muted);
+    max-width: 600px;
+  }
+
+  /* ===== 区塊标題 ===== */
+  .pf-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pf-text);
+    margin-bottom: var(--pf-spacing-md);
+  }
+
+  /* ===== 作品区塊 ===== */
+  .pf-works {
+    padding: var(--pf-spacing-lg) 0;
+    border-bottom: 1px solid var(--pf-border);
+  }
+
+  .pf-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--pf-spacing-md);
+  }
+
+  /* ===== 作品卡片 ===== */
+  .pf-card {
+    background: var(--pf-white);
+    border: 1px solid var(--pf-border);
+    transition: border-color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .pf-card:hover {
+    border-color: var(--pf-text);
+  }
+
+  .pf-card-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--pf-bg);
+    border-bottom: 1px solid var(--pf-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pf-placeholder {
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--pf-border);
+  }
+
+  .pf-card-content {
+    padding: var(--pf-spacing-xs);
+  }
+
+  .pf-card-title {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--pf-text);
+    margin-bottom: 8px;
+  }
+
+  .pf-card-desc {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--pf-text-muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .pf-card-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pf-card-tags span {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--pf-text-muted);
+    padding: 4px 12px;
+    border: 1px solid var(--pf-border);
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== 关於区塊 ===== */
+  .pf-about {
+    padding: var(--pf-spacing-lg) 0;
+    border-bottom: 1px solid var(--pf-border);
+  }
+
+  .pf-about-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--pf-spacing-lg);
+  }
+
+  .pf-about-para {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--pf-text-muted);
+    margin-bottom: 16px;
+  }
+
+  .pf-about-para:last-child {
+    margin-bottom: 0;
+  }
+
+  .pf-about-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pf-spacing-xs);
+  }
+
+  .pf-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: var(--pf-spacing-xs);
+    border-bottom: 1px solid var(--pf-border);
+  }
+
+  .pf-info-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .pf-info-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pf-text-muted);
+  }
+
+  .pf-info-value {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--pf-text);
+  }
+
+  /* ===== 页腳 ===== */
+  .pf-footer {
+    padding: var(--pf-spacing-md) 0;
+  }
+
+  .pf-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pf-copyright {
+    font-size: 12px;
+    color: var(--pf-text-muted);
+  }
+
+  .pf-social {
+    display: flex;
+    gap: var(--pf-spacing-xs);
+  }
+
+  .pf-social a {
+    font-size: 12px;
+    color: var(--pf-text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .pf-social a:hover {
+    color: var(--pf-text);
+  }
+
+  /* ===== 響應式 ===== */
+  @media (max-width: 1024px) {
+    .pf-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pf-about-grid {
+      grid-template-columns: 1fr;
+      gap: var(--pf-spacing-md);
+    }
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --pf-spacing-xs: 16px;
+      --pf-spacing-md: 32px;
+      --pf-spacing-lg: 64px;
+    }
+
+    .pf-nav {
+      display: none;
+    }
+
+    .pf-grid {
+      grid-template-columns: 1fr;
+      gap: var(--pf-spacing-xs);
+    }
+
+    .pf-hero {
+      padding: var(--pf-spacing-md) 0;
+    }
+
+    .pf-works,
+    .pf-about {
+      padding: var(--pf-spacing-md) 0;
+    }
+
+    .pf-footer-content {
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+  }
+
+  </style>
+  <link rel="stylesheet" href="/assets/index-xfgqKiMF.css">
+</head>
+<body>
+
+  <!-- 頂部导航 -->
+  <header class="pf-header">
+    <div class="pf-container">
+      <div class="pf-logo">MINIMAL</div>
+      <nav class="pf-nav">
+        <a href="javascript:void(0)" data-i18n="portfolio.nav.home">>[object Object]</a>
+        <a href="javascript:void(0)" data-i18n="portfolio.nav.work">Work</a>
+        <a href="javascript:void(0)" data-i18n="portfolio.nav.about">About</a>
+        <a href="javascript:void(0)" data-i18n="portfolio.nav.contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 英雄区塊 -->
+  <section class="pf-hero">
+    <div class="pf-container">
+      <h1 class="pf-hero-title" data-i18n="portfolio.hero.title">Designer & Developer</h1>
+      <p class="pf-hero-subtitle" data-i18n="portfolio.hero.subtitle">Creating minimal, functional experiences through thoughtful design and clean code.</p>
+    </div>
+  </section>
+
+  <!-- 作品网格 -->
+  <section class="pf-works">
+    <div class="pf-container">
+      <h2 class="pf-section-title" data-i18n="portfolio.works.title">Selected Work</h2>
+      <div class="pf-grid">
+        <!-- 作品卡片 1 -->
+        <article class="pf-card">
+          <div class="pf-card-image">
+            <div class="pf-placeholder">01</div>
+          </div>
+          <div class="pf-card-content">
+            <h3 class="pf-card-title" data-i18n="portfolio.works.project1.title">E-Commerce Platform</h3>
+            <p class="pf-card-desc" data-i18n="portfolio.works.project1.desc">Modern shopping experience with focus on product discovery</p>
+            <div class="pf-card-tags">
+              <span data-i18n="portfolio.works.project1.tag1">UI/UX</span>
+              <span data-i18n="portfolio.works.project1.tag2">React</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 作品卡片 2 -->
+        <article class="pf-card">
+          <div class="pf-card-image">
+            <div class="pf-placeholder">02</div>
+          </div>
+          <div class="pf-card-content">
+            <h3 class="pf-card-title" data-i18n="portfolio.works.project2.title">Task Management App</h3>
+            <p class="pf-card-desc" data-i18n="portfolio.works.project2.desc">Minimalist productivity tool for individuals and teams</p>
+            <div class="pf-card-tags">
+              <span data-i18n="portfolio.works.project2.tag1">Product</span>
+              <span data-i18n="portfolio.works.project2.tag2">Mobile</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 作品卡片 3 -->
+        <article class="pf-card">
+          <div class="pf-card-image">
+            <div class="pf-placeholder">03</div>
+          </div>
+          <div class="pf-card-content">
+            <h3 class="pf-card-title" data-i18n="portfolio.works.project3.title">Portfolio Website</h3>
+            <p class="pf-card-desc" data-i18n="portfolio.works.project3.desc">Clean, minimal portfolio for a photography studio</p>
+            <div class="pf-card-tags">
+              <span data-i18n="portfolio.works.project3.tag1">Web</span>
+              <span data-i18n="portfolio.works.project3.tag2">Branding</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 作品卡片 4 -->
+        <article class="pf-card">
+          <div class="pf-card-image">
+            <div class="pf-placeholder">04</div>
+          </div>
+          <div class="pf-card-content">
+            <h3 class="pf-card-title" data-i18n="portfolio.works.project4.title">Banking Dashboard</h3>
+            <p class="pf-card-desc" data-i18n="portfolio.works.project4.desc">Enterprise financial management interface</p>
+            <div class="pf-card-tags">
+              <span data-i18n="portfolio.works.project4.tag1">Dashboard</span>
+              <span data-i18n="portfolio.works.project4.tag2">Fintech</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 作品卡片 5 -->
+        <article class="pf-card">
+          <div class="pf-card-image">
+            <div class="pf-placeholder">05</div>
+          </div>
+          <div class="pf-card-content">
+            <h3 class="pf-card-title" data-i18n="portfolio.works.project5.title">Music Streaming</h3>
+            <p class="pf-card-desc" data-i18n="portfolio.works.project5.desc">Elegant audio player with focus on album artwork</p>
+            <div class="pf-card-tags">
+              <span data-i18n="portfolio.works.project5.tag1">Mobile</span>
+              <span data-i18n="portfolio.works.project5.tag2">Audio</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 作品卡片 6 -->
+        <article class="pf-card">
+          <div class="pf-card-image">
+            <div class="pf-placeholder">06</div>
+          </div>
+          <div class="pf-card-content">
+            <h3 class="pf-card-title" data-i18n="portfolio.works.project6.title">Documentation Site</h3>
+            <p class="pf-card-desc" data-i18n="portfolio.works.project6.desc">Developer-friendly API documentation platform</p>
+            <div class="pf-card-tags">
+              <span data-i18n="portfolio.works.project6.tag1">Web</span>
+              <span data-i18n="portfolio.works.project6.tag2">Dev Tools</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 关於区塊 -->
+  <section class="pf-about">
+    <div class="pf-container">
+      <div class="pf-about-grid">
+        <div class="pf-about-text">
+          <h2 class="pf-section-title" data-i18n="portfolio.about.title">About</h2>
+          <p class="pf-about-para" data-i18n="portfolio.about.para1">
+            I am a designer and developer focused on creating minimal, functional digital experiences.
+            My work combines clean aesthetics with practical solutions.
+          </p>
+          <p class="pf-about-para" data-i18n="portfolio.about.para2">
+            With over 8 years of experience, I've worked with startups and established companies
+            to bring their ideas to life through thoughtful design and elegant code.
+          </p>
+        </div>
+        <div class="pf-about-info">
+          <div class="pf-info-item">
+            <span class="pf-info-label" data-i18n="portfolio.about.locationLabel">Location</span>
+            <span class="pf-info-value" data-i18n="portfolio.about.locationValue">San Francisco, CA</span>
+          </div>
+          <div class="pf-info-item">
+            <span class="pf-info-label" data-i18n="portfolio.about.experienceLabel">Experience</span>
+            <span class="pf-info-value" data-i18n="portfolio.about.experienceValue">8+ Years</span>
+          </div>
+          <div class="pf-info-item">
+            <span class="pf-info-label" data-i18n="portfolio.about.emailLabel">Email</span>
+            <span class="pf-info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b636e6767644b66626562666a67256f6e78626c65">[email&#160;protected]</a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页腳 -->
+  <footer class="pf-footer">
+    <div class="pf-container">
+      <div class="pf-footer-content">
+        <span class="pf-copyright" data-i18n="portfolio.footer.copyright">© 2025 Minimal Portfolio</span>
+        <div class="pf-social">
+          <a href="javascript:void(0)">Twitter</a>
+          <a href="javascript:void(0)">GitHub</a>
+          <a href="javascript:void(0)">Dribbble</a>
+          <a href="javascript:void(0)">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+## 配色方案
+
+配色方案：霓虹粉紫 (#FF71CE)、霓虹蓝 (#01CDFE)、霓虹紫 (#B967FF)、暗紫背景 (#2E1F47)
+
+
+主色纯白背景 (#FFFFFF)、深灰文字 (#333333)、浅灰 (#F8F9FA)、功能黑色 (#000000)、中性灰色 (#6C757D)
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

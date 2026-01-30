@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇点前沿 - Singularity Front</title>
+    <link href="https://puhuiti.oss-cn-hangzhou.aliyuncs.com/puhuiti.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* 极简单色配色 */
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #FAFAFA;
+            --bg-card: #FFFFFF;
+
+            --text-primary: #111111;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+
+            --border: #E5E5E5;
+            --border-hover: #111111;
+
+            /* 单一强调色 - 深蓝 */
+            --accent: #1a1a2e;
+            --accent-light: #f0f0f5;
+
+            --spacing-xs: 24px;
+            --spacing-md: 48px;
+            --spacing-lg: 96px;
+        }
+
+        body {
+            font-family: 'Alibaba PuHuiTi', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========== Header ========== */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-xs);
+            height: 120px;
+            display: flex;
+            align-items: flex-end;
+            gap: var(--spacing-xs);
+            padding-bottom: 0;
+        }
+
+        /* ========== 人物 Tabs ========== */
+        .person-tabs {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+            position: relative;
+            width: 300px;
+            height: 120px;
+        }
+
+        .person-tab-wrapper {
+            width: 186px;
+            height: 120px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            position: absolute;
+            flex-shrink: 0;
+        }
+
+        .person-tab {
+            width: 180px;
+            height: 120px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-right: none;
+            overflow: hidden;
+        }
+
+        .person-tab img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: filter 0.2s ease;
+        }
+
+        .person-tab-wrapper:hover .person-tab {
+            border-color: var(--border-hover);
+        }
+
+        .person-tab-wrapper:hover .person-tab img {
+            filter: grayscale(0%);
+        }
+
+        .person-tab-wrapper:nth-child(1) {
+            left: 0;
+            z-index: 3;
+            transform: scale(1);
+        }
+
+        .person-tab-wrapper:nth-child(2) {
+            left: 130px;
+            z-index: 2;
+            transform: scale(0.95);
+        }
+
+        .person-tab-wrapper:nth-child(3) {
+            left: 260px;
+            z-index: 1;
+            transform: scale(0.9);
+        }
+
+        /* ========== 网站标题 ========== */
+        .site-title {
+            flex: 1;
+            text-align: center;
+            font-size: 48px;
+            font-weight: 300;
+            color: var(--accent);
+            letter-spacing: 16px;
+            opacity: 0.3;
+            text-transform: uppercase;
+            padding-bottom: 20px;
+        }
+
+        /* ========== 导航 ========== */
+        .nav {
+            display: flex;
+            gap: 32px;
+            flex-shrink: 0;
+            margin-left: -30px;
+            padding-bottom: 16px;
+        }
+
+        .nav a {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.15s ease;
+            position: relative;
+            padding-bottom: 6px;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: var(--text-primary);
+        }
+
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--text-primary);
+        }
+
+        /* ========== Content ========== */
+        .content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-xs) var(--spacing-md);
+            display: grid;
+            grid-template-columns: 6fr 4fr;
+            gap: var(--spacing-md);
+        }
+
+        /* ========== 时间线卡片 ========== */
+        .timeline-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 1px solid var(--border);
+            padding: var(--spacing-xs);
+            transition: border-color 0.15s ease;
+        }
+
+        .timeline-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 32px;
+            padding-bottom: var(--spacing-xs);
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        .timeline-item.fade-out {
+            opacity: 0;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        /* 时间线竖线 */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 6px;
+            bottom: calc(var(--spacing-xs) + 6px);
+            width: 1px;
+            background: var(--border);
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        /* 时间线圆点 */
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 13px;
+            height: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-dot::after {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: var(--text-primary);
+            border-radius: 50%;
+        }
+
+        /* 元数据行 */
+        .timeline-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .timeline-source {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .timeline-separator {
+            font-size: 11px;
+            color: var(--border);
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .timeline-tag {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-left: auto;
+        }
+
+        .timeline-title {
+            font-size: 17px;
+            font-weight: 400;
+            color: var(--accent);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .timeline-summary {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* ========== 右侧卡片 ========== */
+        .trending-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .trending-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: var(--spacing-xs);
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+        }
+
+        .trending-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .trending-title {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--accent);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .trending-summary {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .trending-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .trending-source {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .trending-separator {
+            font-size: 11px;
+            color: var(--border);
+        }
+
+        .trending-tag {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            margin-left: auto;
+        }
+
+        /* ========== Footer ========== */
+        .footer {
+            padding: var(--spacing-md) 0;
+            border-top: 1px solid var(--border);
+            margin-top: var(--spacing-lg);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-xs);
+            text-align: center;
+        }
+
+        .copyright {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --spacing-xs: 16px;
+                --spacing-md: 32px;
+                --spacing-lg: 64px;
+            }
+
+            .person-tabs {
+                width: 120px;
+                height: 72px;
+            }
+
+            .person-tab-wrapper {
+                width: 86px;
+                height: 72px;
+            }
+
+            .person-tab {
+                width: 80px;
+                height: 72px;
+            }
+
+            .person-tab-wrapper:nth-child(2) {
+                left: 50px;
+            }
+
+            .person-tab-wrapper:nth-child(3) {
+                left: 100px;
+            }
+
+            .site-title {
+                font-size: 20px;
+                letter-spacing: 6px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .timeline-tag,
+            .trending-tag {
+                margin-left: 0;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <!-- 人物 Tab 轮播区 -->
+            <div class="person-tabs" id="personTabs">
+                <div class="person-tab-wrapper active" data-person="musk">
+                    <div class="person-tab">
+                        <img src="assets/images/people/马斯克-1.png" alt="" onerror="this.style.display='none'">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 网站标题 -->
+            <h1 class="site-title">奇点前沿</h1>
+
+            <!-- 导航 -->
+            <nav class="nav">
+                <a href="#" class="active">新 闻</a>
+                <a href="#">奇 点</a>
+                <a href="#">前 沿</a>
+                <a href="#">关 于</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="content">
+        <!-- 左侧：时间线大卡片 -->
+        <article class="timeline-card" id="timelineCard">
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-meta">
+                    <span class="timeline-source">Reuters</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-time">2小时前</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-tag">SpaceX</span>
+                </div>
+                <h3 class="timeline-title">SpaceX 星舰第四次试飞成功，成功实现海面软着陆</h3>
+                <p class="timeline-summary">在德克萨斯州博卡奇卡发射场，SpaceX 成功完成星舰第四次轨道试飞。超重型助推器和飞船均成功降落在预定区域，标志着人类迈向火星的重要一步。</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-meta">
+                    <span class="timeline-source">Bloomberg</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-time">5小时前</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-tag">Tesla</span>
+                </div>
+                <h3 class="timeline-title">特斯拉FSD v12.5向全美用户推送，端到端神经网络表现惊艳</h3>
+                <p class="timeline-summary">特斯拉最新全自动驾驶系统开始向全美用户推送。新版本完全采用端到端神经网络，无需人工编写规则代码，在城市道路表现接近人类水平。</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-meta">
+                    <span class="timeline-source">TechCrunch</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-time">1天前</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-tag">xAI</span>
+                </div>
+                <h3 class="timeline-title">xAI 完成60亿美元融资，估值达240亿美元</h3>
+                <p class="timeline-summary">马斯克旗下人工智能公司 xAI 宣布完成B轮融资，由红杉资本领投。资金将用于扩充算力基础设施，加速 Grok 模型的研发进程。</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-meta">
+                    <span class="timeline-source">Nature</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-time">2天前</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-tag">Neuralink</span>
+                </div>
+                <h3 class="timeline-title">Neuralink 获得FDA突破性设备认证</h3>
+                <p class="timeline-summary">脑机接口公司 Neuralink 宣布其无线脑机接口系统获得FDA突破性设备认定。首例人类植入患者已能通过意念控制电脑鼠标，开启瘫痪患者治疗新纪元。</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-meta">
+                    <span class="timeline-source">The Verge</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-time">3天前</span>
+                    <span class="timeline-separator">│</span>
+                    <span class="timeline-tag">Tesla</span>
+                </div>
+                <h3 class="timeline-title">特斯拉新一代Optimus机器人亮相工厂</h3>
+                <p class="timeline-summary">特斯拉发布人形机器人 Optimus 最新工作视频，展示了在工厂中进行精密操作的能力。机器人已完成自主搬运、零件组装等复杂任务，商业化进程加速。</p>
+            </div>
+        </article>
+
+        <!-- 右侧：独立卡片 -->
+        <aside>
+            <div class="trending-list">
+                <article class="trending-card">
+                    <h3 class="trending-title">OpenAI GPT-5 研发进展顺利，多模态能力大幅提升</h3>
+                    <p class="trending-summary">据内部人士透露，GPT-5 训练进度超出预期。新模型在视频理解、代码生成和长文本处理方面取得突破性进展。</p>
+                    <div class="trending-meta">
+                        <span class="trending-source">OpenAI</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-time">2小时前</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-tag">OpenAI</span>
+                    </div>
+                </article>
+
+                <article class="trending-card">
+                    <h3 class="trending-title">NVIDIA 新一代Blackwell架构芯片开始出货，性能提升3倍</h3>
+                    <p class="trending-summary">英伟达下一代数据中心 GPU Blackwell 已开始向客户发货。新芯片采用台积电4NP工艺，AI算力达到20 petaflops。</p>
+                    <div class="trending-meta">
+                        <span class="trending-source">NVIDIA</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-time">5小时前</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-tag">NVIDIA</span>
+                    </div>
+                </article>
+
+                <article class="trending-card">
+                    <h3 class="trending-title">Stellar 可控核聚变实验首次实现净能量增益持续输出</h3>
+                    <p class="trending-summary">核聚变初创公司 Stellar 宣布，其反应堆连续10小时输出能量超过输入能量，首次实现商业化级别的稳定运行。</p>
+                    <div class="trending-meta">
+                        <span class="trending-source">MIT Tech Review</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-time">1天前</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-tag">Stellar</span>
+                    </div>
+                </article>
+
+                <article class="trending-card">
+                    <h3 class="trending-title">Boston Dynamics Atlas机器人进入工厂测试，商业化进程加速</h3>
+                    <p class="trending-summary">现代汽车集团旗下波士顿动力宣布，Atlas 人形机器人已在汽车制造厂开始实地测试，执行搬运和装配任务。</p>
+                    <div class="trending-meta">
+                        <span class="trending-source">IEEE Spectrum</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-time">2天前</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-tag">Boston Dynamics</span>
+                    </div>
+                </article>
+
+                <article class="trending-card">
+                    <h3 class="trending-title">QuantumScape 固态电池能量密度突破500Wh/kg，量产在即</h3>
+                    <p class="trending-summary">固态电池先锋 QuantumScape 宣布其最新一代电池能量密度达到510Wh/kg，循环寿命超过1000次，工厂建设进入最后阶段。</p>
+                    <div class="trending-meta">
+                        <span class="trending-source">Nature Energy</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-time">3天前</span>
+                        <span class="trending-separator">│</span>
+                        <span class="trending-tag">QuantumScape</span>
+                    </div>
+                </article>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <span class="copyright">© 2025 奇点前沿</span>
+        </div>
+    </footer>
+
+    <script>
+        // 人物 Tab 切换逻辑
+        const personTabs = document.getElementById('personTabs');
+        const tabWrappers = personTabs.querySelectorAll('.person-tab-wrapper');
+        const timelineCard = document.getElementById('timelineCard');
+        const timelineItems = document.querySelectorAll('.timeline-item');
+
+        function switchTab(clickedWrapper) {
+            const currentIndex = Array.from(tabWrappers).indexOf(clickedWrapper);
+
+            tabWrappers.forEach(wrapper => wrapper.classList.remove('active'));
+            clickedWrapper.classList.add('active');
+
+            tabWrappers.forEach((wrapper, index) => {
+                wrapper.style.position = 'absolute';
+                wrapper.style.left = '0';
+                wrapper.style.transform = '';
+                wrapper.style.opacity = '';
+                wrapper.style.zIndex = '';
+            });
+
+            const newOrder = Array.from(tabWrappers);
+            const clickedWrapperData = newOrder.splice(currentIndex, 1)[0];
+            newOrder.unshift(clickedWrapperData);
+
+            newOrder.forEach((wrapper, index) => {
+                wrapper.style.left = (index * 130) + 'px';
+                wrapper.style.zIndex = 3 - index;
+                wrapper.style.transform = 'scale(' + (1 - index * 0.05) + ')';
+            });
+
+            timelineItems.forEach((item, i) => {
+                item.classList.add('fade-out');
+                setTimeout(() => {
+                    item.classList.remove('fade-out');
+                }, 100 + i * 50);
+            });
+        }
+
+        tabWrappers.forEach(wrapper => {
+            wrapper.addEventListener('click', () => switchTab(wrapper));
+        });
+
+        // 导航切换
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
