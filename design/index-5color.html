@@ -191,28 +191,39 @@
         .site-title {
             text-align: left;
             font-family: 'Alibaba PuHuiTi', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
-            font-size: 35px;
-            font-weight: 500;
-            color: var(--maya-meta);
+            font-size: 34px;
+            font-weight: 800;
+            color: rgba(5, 10, 20, 0.7);
             letter-spacing: 15px;
-            opacity: 0.5;
+            opacity: 0.8;
             padding-top: 1px;
             padding-bottom: 10px;
             transition: all 0.3s ease;
             margin-left: 20px;
             position: relative;
             transform: skewX(-12deg);
-            /* IBM 栅栏层叠效果 - maya-blue 梯度 */
+        }
+
+        /* 凸起效果 */
+        .site-title.raised {
+            /* 左上高光 + 右下阴影 = 凸起 */
             text-shadow:
-                1px 1px 0 rgba(85, 193, 255, 0.15),
-                2px 2px 0 rgba(85, 193, 255, 0.15),
-                3px 3px 0 rgba(85, 193, 255, 0.15),
-                4px 4px 0 rgba(85, 193, 255, 0.15),
-                5px 5px 0 rgba(85, 193, 255, 0.15),
-                6px 6px 0 rgba(85, 193, 255, 0.15),
-                7px 7px 0 rgba(85, 193, 255, 0.15),
-                8px 8px 0 rgba(85, 193, 255, 0.10),
-                0 0 16px rgba(85, 193, 255, 0.3);
+                -1px -1px 1px rgba(85, 193, 255, 0.4),
+                -2px -2px 2px rgba(85, 193, 255, 0.2),
+                1px 1px 1px rgba(0, 0, 0, 0.6),
+                2px 2px 2px rgba(0, 0, 0, 0.4),
+                0 0 4px rgba(85, 193, 255, 0.3);
+        }
+
+        /* 凹陷效果 */
+        .site-title.inset {
+            /* 左上阴影 + 右下高光 = 凹陷 */
+            text-shadow:
+                -1px -1px 1px rgba(0, 0, 0, 0.6),
+                -2px -2px 2px rgba(0, 0, 0, 0.4),
+                1px 1px 1px rgba(85, 193, 255, 0.4),
+                2px 2px 2px rgba(85, 193, 255, 0.2),
+                0 0 4px rgba(85, 193, 255, 0.3);
         }
 
         .site-title:hover {
@@ -624,7 +635,8 @@
 
             <!-- 网站标题 -->
             <!-- <h1 class="site-title">Singularity Front</h1> -->
-            <h1 class="site-title">奇点前沿</h1>
+            <!-- 切换效果: class="site-title raised" (凸起) 或 class="site-title inset" (凹陷) -->
+            <h1 class="site-title inset">奇点前沿</h1>
 
             <!-- 导航 -->
             <nav class="nav">
