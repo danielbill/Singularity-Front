@@ -18,10 +18,10 @@ legend:
     - ["马斯克", "埃隆·马斯克", "Elon Musk"]
 
     # 特斯拉相关
-    - ["特斯拉", "Tesla", "TSLA","Tesla Bot", "擎天柱","Gigafactory"]
+    - ["特斯拉", "Tesla", "TSLA","Tesla Bot", "擎天柱","Optimus"]
 
     # SpaceX 相关
-    - ["SpaceX", "星舰", "Starship", "猎鹰","星链", "Starlink", "卫星互联网"]
+    - ["SpaceX", "星舰", "Starship", "猎鹰","星链", "Starlink"]
 
     # 其他
     - ["xAI", "Grok","Neuralink"]
@@ -29,41 +29,56 @@ legend:
   huang:
     # 人物名
     - ["黄仁勋", "Jensen Huang"]
-
     # 英伟达相关
-    - ["英伟达", "NVIDIA", "NVDA","CUDA", "英伟达生态"]
-    - ["Blackwell", "H100", "H200"]
+    - ["英伟达", "NVIDIA", "NVDA","CUDA","cosmos"]
+    - ["Blackwell", "H100", "H200","5090","rubin"]
 
   altman:
     # 人物名
-    - ["奥尔特曼", "Sam Altman", "萨姆·奥尔特曼"]
-
+    - ["奥尔特曼", "Sam Altman"]
     # OpenAI 相关
     - ["OpenAI", "ChatGPT", "GPT"]
+  
+  anthropic:
+    - ["Anthropic","Dario Amodei","Daniela Amodei","丹妮拉·阿莫迪","达里奥·阿莫迪"]
+    - ["claude","claudecode","claude code","claude cowork"]
+  
+  google:
+     - ["google","谷歌","拉里·佩奇","谢尔盖·布林","桑达尔·皮查伊"]
+     - ["android","gemine","TPU","捕日者计划","Ironwood"]
 
+  Microsoft:
+     - ["Microsoft","微软","比尔·盖茨","maia","MAI"]
+
+  alibaba:
+     - ["阿里巴巴","马云","千问","qwen","平头哥","真武"]
+  
+  huawei:
+     - ["huawei", "华为", "任正非","昇腾","升腾","鸿蒙","鲲鹏"]
 # ────────────────────────────────────────────────────────────────────────────
 # Front 关键词 - 纯前沿资讯，不关联特定人物
 # ────────────────────────────────────────────────────────────────────────────
 front:
   # AI 通用
-  - ["AGI", "通用人工智能"]
-  - ["大模型", "LLM", "生成式AI", "AIGC"]
-  - ["深度学习", "神经网络"]
+  - ["AGI", "通用人工智能","物理AI引擎"]
+  - ["LLM", "生成式AI", "AIGC","智能体"]
 
   # 中国大模型
   - ["deepseek", "kimi", "智谱", "glm", "minimax", "qwen", "豆包"]
 
   # 国外大模型
-  - ["claude", "gemini"]
+  - ["llama", "nova"]
 
   # 大模型工具
-  - ["claude code", "opencode", "claudecode", "Clawdbot"]
+  - [ "opencode", "Clawdbot","openbot"]
 
-  # 机器人
-  - ["人形机器人", "具身智能", "宇树", "开元"]
+  # 国产机器人
+  - ["宇树", "智元","优必选","傅里叶","乐聚"]
+  # 机器人材料
+  - ["peek"]
 
   # 太空产业
-  - ["卫星", "星座计划", "低轨", "太空光伏", "太空算力", "钙钛矿"]
+  - ["卫星","卫星互联网", "星座计划", "太空光伏", "太空算力", "钙钛矿"]
 
   # 中国商业航天6小龙
   - ["蓝箭航天", "中科宇航", "星河动力", "天兵科技", "星际荣耀", "东方空间"]
@@ -72,13 +87,13 @@ front:
   - ["脑机接口", "数字永生", "意识上传", "脑机交互", "脑机融合"]
 
   # 先进GPU类型
-  - ["lpu", "Ironwood", "maia", "Trainium", "TPU"]
+  - ["lpu", "Trainium"]
 
   # 国产GPU
   - ["昇腾", "寒武纪", "摩尔线程", "壁仞", "沐曦", "燧原", "天数智芯", "海光", "芯动科技", "登临科技", "兆芯", "芯瞳", "曦望"]
 
-  # 华为
-  - ["huawei", "华为", "任正非"]
 
-  # Google
-  - ["google"]
+
+
+
+

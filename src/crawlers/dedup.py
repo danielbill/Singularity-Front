@@ -144,10 +144,13 @@ class TextDeduplicator:
         return deduped
 
     def _filter_by_date(self, articles: List[Article]) -> List[Article]:
-        """时间排重：只保留目标日期的文章"""
+        """时间排重：只保留目标日期及之后的文章（财经新闻会提前发次日新闻）"""
         result = []
         for a in articles:
-            match = a.timestamp.date() == self.target_date
+            # 获取文章日期（timestamp 已经是北京时间，直接取 date 即可）
+            article_date = a.timestamp.date()
+            # 大于等于目标日期都保留（财经新闻会提前发次日新闻）
+            match = article_date >= self.target_date
             if match:
                 result.append(a)
             else:

@@ -41,8 +41,14 @@ class UniversalCrawler:
                 news_batch_limit = 20  # 默认值
         self.news_batch_limit = news_batch_limit
 
+        # 使用连接池限制，防止连接泄漏
         self.client = httpx.AsyncClient(
             timeout=30,
+            limits=httpx.Limits(
+                max_connections=10,      # 最大连接数
+                max_keepalive_connections=5,  # 保持活动的连接数
+                keepalive_expiry=30.0,    # keepalive 过期时间
+            ),
             headers={
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
             }

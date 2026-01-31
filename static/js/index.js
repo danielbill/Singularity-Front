@@ -64,6 +64,10 @@ function renderTimelineItem(article) {
     const timeStr = formatTime(article.timestamp);
     const sourceName = getSourceName(article.source);
     const tagsHtml = renderTags(article.tags);
+    // legend 标签
+    const legendTag = article.legend
+        ? `<span class="timeline-separator news-separator">│</span><span class="timeline-tag news-tag">${article.legend}</span>`
+        : '';
 
     return `
         <div class="timeline-item">
@@ -72,6 +76,7 @@ function renderTimelineItem(article) {
                 <span class="timeline-source news-source">${sourceName}</span>
                 <span class="timeline-separator news-separator">│</span>
                 <span class="timeline-time news-time">${timeStr}</span>
+                ${legendTag}
                 ${tagsHtml}
             </div>
             <h3 class="timeline-title"><a href="${article.url}" target="_blank" style="color: inherit; text-decoration: none;">${article.title}</a></h3>
@@ -129,9 +134,10 @@ async function loadNews() {
             // 渲染左侧时间线
             if (timelineArticles.length > 0) {
                 timelineCard.innerHTML = timelineArticles.map(renderTimelineItem).join('');
-                // 根据第一条新闻的 legend 设置背景图
-                const firstLegend = timelineArticles[0].legend;
-                timelineCard.setAttribute('data-legend', firstLegend || 'none');
+                // 动态设置背景图 CSS 变量
+                const firstLegend = timelineArticles[0].legend || 'musk';
+                timelineCard.style.setProperty('--legend-bg',
+                    `url('/static/images/legend/${firstLegend}.png')`);
             } else {
                 timelineCard.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: var(--maya-meta);">
@@ -139,7 +145,7 @@ async function loadNews() {
                         <div>暂无奇点人物相关新闻</div>
                     </div>
                 `;
-                timelineCard.setAttribute('data-legend', 'none');
+                timelineCard.style.setProperty('--legend-bg', 'none');
             }
 
             // 渲染右侧热门

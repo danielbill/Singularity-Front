@@ -156,30 +156,9 @@ data/
 ## 前端设计规范
 
 ### 设计文件
+
+- UI设计约束：[极简风格](design/极简风格提示词.md) [core](design/core-minimalism-design-system.md)
 - **首页定稿**：`design/index-news.html`
-- **设计参考**：`design/index-5color.html`
-
-### 视觉风格
-科技感 / 赛博朋克 / 信息流
-
-### 色彩系统 (5色模板)
-
-| 色名 | 色值 | 用途 |
-|------|------|------|
-| black | `#010400` | 背景 |
-| hot-fuchsia | `#ff1654` | 点缀色 |
-| maya-blue | `#55c1ff` | 主强调色 |
-| ghost-white | `#fbf9ff` | 主要文字 |
-| french-blue | `#1c448e` | 深层强调 |
-
-### Maya-blue 梯度系统
-```css
---maya-bright: #8dd4ff;       /* L1 - 最亮层（高光效果） */
---maya-primary: #55c1ff;      /* L2 - 主强调色 */
---maya-mid: #4a8a9a;          /* L3 - 中等层 */
---maya-meta: #6a9cd6;         /* L3.5 - 元数据层 */
---maya-subtle: #2d3a45;       /* L4 - 边框层 */
-```
 
 ---
 
@@ -206,7 +185,7 @@ data/
 
 ### 定时任务约束
 1. **最小抓取间隔**: 15分钟（900秒），不能设置更小
-2. **启动行为**: 服务启动后默认立刻执行一次抓取
+2. **启动行为**: 服务启动后15秒执行一次抓取
 
 ### 关键词配置约束
 - **格式**: 必须使用数组格式 `["关键词"]`，不能使用字符串格式
@@ -297,3 +276,90 @@ start.bat
 # 手动启动
 python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+---
+
+## 前端架构记忆
+
+### 两种运行模式
+
+| 模式 | 文件 | CSS/JS | 用途 |
+|------|------|--------|------|
+| **本地开发** | `templates/index.html` | `/static/css/index.css` + `/static/js/index.js` | FastAPI 动态服务 |
+| **GitHub Pages** | `docs/index.html` | 样式内联，静态预渲染 | 纯静态托管 |
+
+### 数据流
+
+**本地开发模式**：
+```
+浏览器 → / → FastAPI 返回 templates/index.html
+         ↓
+    加载 /static/js/index.js
+         ↓
+    fetch('/api/articles') → FastAPI 从 SQLite 读取 → JSON 返回
+         ↓
+    index.js 动态渲染页面
+```
+
+**GitHub Pages 模式**：
+```
+运行 python -m src.generate_static
+         ↓
+从今日 SQLite 读取数据
+         ↓
+使用 Jinja2 渲染 templates/static_index.html（预渲染）
+         ↓
+生成 docs/index.html（样式内联）
+         ↓
+GitHub Pages 自动发布
+```
+
+### 关键文件职责
+
+| 文件 | 职责 |
+|------|------|
+| `static/css/index.css` | 首页样式（给本地开发 `templates/index.html` 用） |
+| `static/js/index.js` | 数据绑定和动态渲染（fetch API + DOM 操作） |
+| `templates/index.html` | 本地开发动态模板 |
+| `templates/static_index.html` | GitHub Pages 静态模板 |
+| `src/generate_static.py` | 静态页面生成器 |
+
+### 修改前端注意事项
+
+1. **修改本地开发界面**：改 `templates/index.html`、`static/css/index.css`、`static/js/index.js`
+2. **修改 GitHub Pages 界面**：改 `templates/static_index.html`，然后运行 `python -m src.generate_static`
+3. **两者都要改**：需要同步修改两处，保持一致
+
+### 图像资源
+
+- `static/images/people/` - 奇点人物头像（musk.png, huang.png, altman.png）
+- 动态背景图根据新闻 `legend` 字段切换
+
+---
+
+## GitHub Actions 配置
+
+### 配置文件
+- **位置**：`.github/workflows/crawler.yml`
+
+### 定时调度
+- **Cron 表达式**：`0 23,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14 * * *`
+- **北京时间**：早上 7 点到晚上 10 点，每小时执行
+- **UTC 时间**：23:00, 0:00-14:00（前一天 23:00 + 当天 0-14 点）
+
+### Workflow 步骤
+1. 检出代码
+2. 设置 Python 3.11
+3. 安装依赖
+4. 运行爬虫 `python -m src.crawl_cli`
+5. 生成静态页面 `python -m src.generate_static`
+6. 提交并推送（跳过 CI：`[skip ci]`）
+
+### 手动触发
+```bash
+gh workflow run crawler.yml
+```
+
+### 项目命令
+
+- reload ： 重新读取CLAUDE.md 
