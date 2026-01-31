@@ -23,12 +23,12 @@ def format_time(iso_string: str) -> str:
 
 
 def copy_static_files():
-    """复制 static/images 到 docs/static/images（增量复制）"""
-    src = Path("static/images")
-    dst = Path("docs/static/images")
+    """复制 static 目录到 docs/static（增量复制）"""
+    src = Path("static")
+    dst = Path("docs/static")
 
     if not src.exists():
-        print(f"[Warning] static/images 目录不存在: {src}")
+        print(f"[Warning] static 目录不存在: {src}")
         return
 
     # 确保目标目录存在
@@ -47,7 +47,7 @@ def copy_static_files():
                 shutil.copy2(file, dest_file)
                 copied_count += 1
 
-    print(f"[Generate] 已复制 {copied_count} 个图片文件到 {dst}")
+    print(f"[Generate] 已复制 {copied_count} 个文件到 {dst}")
 
 
 def generate_static_html():
