@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 页面加载时获取新闻
     loadNews();
+
+    // 每 5 分钟自动刷新
+    setInterval(() => {
+        loadNews();
+    }, 5 * 60 * 1000);  // 5 分钟 = 300000 毫秒
 });
 
 // ========== 获取来源名称 ==========
