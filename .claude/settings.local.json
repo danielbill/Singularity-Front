@@ -19,7 +19,10 @@
       "Bash(pytest:*)",
       "Bash(python:*)",
       "Bash(gh workflow run:*)",
-      "Bash(gh run list:*)"
+      "Bash(gh run list:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(git push:*)"
     ]
   }
 }
