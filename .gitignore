@@ -34,11 +34,12 @@ env/
 *~
 
 # Project Specific
-data/
+#data/
 *.sqlite
 *.db
 .env
 .env.local
+.claude
 
 # Logs
 logs/
