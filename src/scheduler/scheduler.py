@@ -1,5 +1,6 @@
 """调度器核心模块"""
 
+import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from typing import Dict, Any, Optional
 from datetime import datetime
@@ -15,10 +16,11 @@ class SchedulerManager:
 
     约束：
     - 最小抓取间隔：15分钟（900秒）
-    - 服务启动后默认立刻执行一次抓取
+    - 服务启动后延迟15秒再执行首次抓取
     """
 
     MIN_INTERVAL = 900  # 15分钟硬编码限制
+    INITIAL_DELAY = 15  # 启动后延迟15秒执行首次抓取
 
     def __init__(self, config_dir: str = "config"):
         """初始化调度器
@@ -52,18 +54,16 @@ class SchedulerManager:
     async def start(self) -> None:
         """启动调度器
 
-        启动时立即执行一次抓取，然后开始定时任务
+        启动后延迟15秒执行首次抓取，然后开始定时任务
         """
         if self.is_running:
             print("[Scheduler] 调度器已在运行")
             return
 
         print(f"[Scheduler] 启动调度器，间隔: {self.interval}秒")
+        print(f"[Scheduler] 首次抓取将在 {self.INITIAL_DELAY} 秒后执行...")
 
-        # 1. 立即执行一次抓取
-        await self._run_crawl_job()
-
-        # 2. 启动定时任务
+        # 1. 启动定时任务（首次执行在 interval 后）
         self.scheduler.add_job(
             self._run_crawl_job,
             'interval',
@@ -75,7 +75,17 @@ class SchedulerManager:
         self.is_running = True
         self.is_paused = False
 
+        # 2. 延迟执行首次抓取（后台任务）
+        asyncio.create_task(self._delayed_first_crawl())
+
         print("[Scheduler] 调度器已启动")
+
+    async def _delayed_first_crawl(self) -> None:
+        """延迟执行首次抓取"""
+        await asyncio.sleep(self.INITIAL_DELAY)
+        if self.is_running and not self.is_paused:
+            print("[Scheduler] 执行首次抓取...")
+            await self._run_crawl_job()
 
     async def stop(self) -> None:
         """停止调度器"""

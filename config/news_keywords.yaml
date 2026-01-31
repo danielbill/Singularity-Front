@@ -15,36 +15,24 @@
 legend:
   musk:
     # 人物名
-    - ["马斯克", "埃隆·马斯克", "Elon Musk", "老马"]
+    - ["马斯克", "埃隆·马斯克", "Elon Musk"]
 
     # 特斯拉相关
-    - ["特斯拉", "Tesla", "TSLA"]
-    - ["FSD", "自动驾驶", "Autopilot"]
-    - ["Tesla Bot", "擎天柱", "机器人"]
+    - ["特斯拉", "Tesla", "TSLA","Tesla Bot", "擎天柱","Gigafactory"]
 
     # SpaceX 相关
-    - ["SpaceX", "星舰", "Starship", "猎鹰"]
-    - ["星链", "Starlink", "卫星互联网"]
-    - ["超级工厂", "Gigafactory"]
-    - ["Dojo", "训练芯片"]
+    - ["SpaceX", "星舰", "Starship", "猎鹰","星链", "Starlink", "卫星互联网"]
 
     # 其他
-    - ["xAI", "Grok"]
-    - ["Neuralink"]
-    - ["火星"]
+    - ["xAI", "Grok","Neuralink"]
 
   huang:
     # 人物名
-    - ["黄仁勋", "Jensen Huang", "老黄"]
+    - ["黄仁勋", "Jensen Huang"]
 
     # 英伟达相关
-    - ["英伟达", "NVIDIA", "NVDA"]
-    - ["GPU", "显卡"]
-    - ["CUDA", "英伟达生态"]
+    - ["英伟达", "NVIDIA", "NVDA","CUDA", "英伟达生态"]
     - ["Blackwell", "H100", "H200"]
-
-    # AI 算力
-    - ["AI 芯片", "算力"]
 
   altman:
     # 人物名

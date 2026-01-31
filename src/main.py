@@ -57,6 +57,16 @@ app.include_router(crawl_router)
 app.include_router(admin_router)
 
 
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_page(request: Request):
+    """后台管理页面"""
+    admin_file = Path("templates/admin.html")
+    if admin_file.exists():
+        with open(admin_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>Admin page not found</h1>", status_code=404)
+
+
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     """根路径 - 返回首页"""
