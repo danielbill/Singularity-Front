@@ -116,7 +116,7 @@ async function loadNews() {
     if (!timelineCard || !trendingList) return;
 
     try {
-        const response = await fetch('/api/articles?limit=100');
+        const response = await fetch('/api/articles/latest?limit=50');
         const result = await response.json();
 
         if (result.code === 200) {
