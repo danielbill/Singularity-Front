@@ -33,7 +33,8 @@
       "Bash(bash .specify/scripts/bash/check-prerequisites.sh:*)",
       "Bash(git clone:*)",
       "Bash(chmod:*)",
-      "Bash(bash .specify/scripts/bash/create-idea.sh:*)"
+      "Bash(bash .specify/scripts/bash/create-idea.sh:*)",
+      "Bash(bash \"D:\\\\ai_tools\\\\Singularity-Front\\\\.specify\\\\scripts\\\\bash\\\\check-prerequisites.sh\" --json)"
     ]
   }
 }
