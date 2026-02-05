@@ -9,6 +9,11 @@ on:
   # 允许手动触发
   workflow_dispatch:
 
+# 并发控制：同一时间只运行一个爬虫任务
+concurrency:
+  group: crawler
+  cancel-in-progress: false
+
 jobs:
   crawl:
     runs-on: ubuntu-latest
@@ -24,9 +29,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'  # 自动缓存 pip 依赖（基于 requirements.txt）
 
       - name: 安装依赖
         run: |
+          pip install --upgrade pip
           pip install -e .
 
       - name: 运行爬虫
@@ -41,4 +48,6 @@ jobs:
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f data/db/*.sqlite docs/
           git diff --staged --quiet || git commit -m "📰 自动抓取新闻 [skip ci]"
+          # 推送前先拉取远程更新，避免冲突
+          git pull --rebase --no-edit
           git push
