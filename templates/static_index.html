@@ -269,6 +269,10 @@
             box-shadow: 0 8px 40px rgba(85, 193, 255, 0.15);
         }
 
+        .timeline-card:hover::before {
+            opacity: 0.05;
+        }
+
         /* ========== 左侧时间线卡片 ========== */
         .timeline-card {
             box-shadow: 0 4px 30px rgba(28, 68, 142, 0.1);
@@ -299,10 +303,7 @@
             {% endif %}
         }
 
-        /* 当鼠标悬停在右侧卡片时，左侧背景图变暗 */
-        .content:has(.trending-card:hover) .timeline-card::before {
-            opacity: 0.15;
-        }
+
 
         .timeline-item {
             position: relative;
