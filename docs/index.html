@@ -297,6 +297,11 @@
             
         }
 
+        /* 当鼠标悬停在右侧卡片时，左侧背景图变暗 */
+        .content:has(.trending-card:hover) .timeline-card::before {
+            opacity: 0.15;
+        }
+
         .timeline-item {
             position: relative;
             padding-left: 32px;
@@ -920,6 +925,14 @@
                         <div class="trending-meta">
                             <span class="trending-source news-source">wallstreetcn-live</span>
                             <span class="trending-time news-time">02-05 10:52</span>
+                        </div>
+                    </article>
+                    
+                    <article class="trending-card" onclick="window.open('https://wallstreetcn.com/articles/3765066', '_blank')">
+                        <h3 class="trending-title">白银的历史大顶，从来不是“贵出来”的</h3>      
+                        <div class="trending-meta">
+                            <span class="trending-source news-source">wallstreetcn-news</span>
+                            <span class="trending-time news-time">02-05 10:51</span>
                         </div>
                     </article>
                     
