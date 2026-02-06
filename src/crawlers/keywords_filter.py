@@ -7,10 +7,23 @@ from ..config.reader import ConfigReader
 
 
 # 全局缓存关键词（小写版本，用于快速匹配）
-_KEYWORDS_CACHE = {"legend": {}, "front": set(), "initialized": False}
+_KEYWORDS_CACHE = {
+    "legend": {},
+    "新星": set(),
+    "涟漪": set(),
+    "中国": set(),
+    "front": set(),  # = 新星 ∪ 涟漪 ∪ 中国（保持向后兼容）
+    "initialized": False
+}
 
 # 原始关键词（保留大小写，用于 _load_keywords 兼容）
-_ORIGINAL_KEYWORDS = {"legend": {}, "front": []}
+_ORIGINAL_KEYWORDS = {
+    "legend": {},
+    "新星": [],
+    "涟漪": [],
+    "中国": [],
+    "front": []
+}
 
 
 def _init_keywords():
@@ -41,28 +54,46 @@ def _init_keywords():
             _KEYWORDS_CACHE["legend"][legend_id] = keywords_lower
             _ORIGINAL_KEYWORDS["legend"][legend_id] = keywords_original
 
-        # 解析 front 关键词
-        front_config = config.get("front", [])
-        front_lower = set()  # 小写版本
-        front_original = []  # 原始版本
-        for group in front_config:
-            if isinstance(group, list):
-                for kw in group:
-                    if kw and kw.strip():
-                        front_lower.add(kw.lower())
-                        front_original.append(kw)
-            elif isinstance(group, str):
-                if group and group.strip():
-                    front_lower.add(group.lower())
-                    front_original.append(group)
-        _KEYWORDS_CACHE["front"] = front_lower
-        _ORIGINAL_KEYWORDS["front"] = front_original
+        # 解析新星、涟漪、中国三个分类
+        front_all_lower = set()  # 合并后的 front（小写）
+        front_all_original = []  # 合并后的 front（原始）
+
+        for category in ("新星", "涟漪", "中国"):
+            category_config = config.get(category, [])
+            category_lower = set()
+            category_original = []
+
+            if isinstance(category_config, list):
+                for group in category_config:
+                    if isinstance(group, list):
+                        for kw in group:
+                            if kw and kw.strip():
+                                category_lower.add(kw.lower())
+                                category_original.append(kw)
+                    elif isinstance(group, str):
+                        if group and group.strip():
+                            category_lower.add(group.lower())
+                            category_original.append(group)
+
+            _KEYWORDS_CACHE[category] = category_lower
+            _ORIGINAL_KEYWORDS[category] = category_original
+
+            # 合并到 front
+            front_all_lower.update(category_lower)
+            front_all_original.extend(category_original)
+
+        # front = 三个分类的合并
+        _KEYWORDS_CACHE["front"] = front_all_lower
+        _ORIGINAL_KEYWORDS["front"] = front_all_original
 
         _KEYWORDS_CACHE["initialized"] = True
 
         # 打印调试信息
         total_legend_kw = sum(len(kws) for kws in _KEYWORDS_CACHE["legend"].values())
         print(f"[Debug] Legend 关键词数: {total_legend_kw}")
+        print(f"[Debug] 新星关键词数: {len(_KEYWORDS_CACHE['新星'])}")
+        print(f"[Debug] 涟漪关键词数: {len(_KEYWORDS_CACHE['涟漪'])}")
+        print(f"[Debug] 中国关键词数: {len(_KEYWORDS_CACHE['中国'])}")
         print(f"[Debug] Front 关键词数: {len(_KEYWORDS_CACHE['front'])}")
     except Exception as e:
         print(f"Warning: Failed to load keywords config: {e}")
@@ -165,7 +196,10 @@ def _load_keywords() -> Dict:
                 'musk': ['关键词1', '关键词2', ...],
                 'huang': ['关键词1', '关键词2', ...],
             },
-            'front': ['关键词1', '关键词2', ...]
+            '新星': ['关键词1', '关键词2', ...],
+            '涟漪': ['关键词1', '关键词2', ...],
+            '中国': ['关键词1', '关键词2', ...],
+            'front': ['关键词1', '关键词2', ...]  # = 新星 ∪ 涟漪 ∪ 中国
         }
     """
     _init_keywords()
