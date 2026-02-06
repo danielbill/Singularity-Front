@@ -46,7 +46,8 @@
       "Bash(done)",
       "Skill(mybrowser)",
       "Bash(git rm:*)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "Bash(git diff:*)"
     ]
   }
 }
