@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目核心理念
 
-**Singularity Front** 是一个"文明前沿雷达系统"，实时追踪奇点人物（Singularity）及其生态系统（Front）的所有动态。
+**SF-NEWS** 是一个"文明前沿雷达系统"，实时追踪奇点人物（Singularity）及其生态系统（Front）的所有新闻动态。
 
 ### 核心概念
 
@@ -50,9 +50,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 模块独立性
 项目分为四个独立模块，**不要混淆它们的数据源**：
 - 新闻抓取模块（9个新闻源，三层去重）
-- 财报数据模块（专业财经 API，独立数据源）
-- 公司档案模块（手动维护，AI 辅助）
-- 关联分析模块（后期实现，智能关联）
+
 
 ### 通用规则
 1. **所有回复用简体中文**
@@ -95,22 +93,9 @@ gh workflow run crawler.yml
 
 【update】将对话中最新确认的设计，更新至：
 - [design](docs/design.md) - 设计方案文档
-- [development_plan](docs/development_plan.md) - 开发计划（含工作记录）
+- [dev plan](docs/计划/development_plan.md) - 开发计划（含工作记录）
 - [fix_plan](.ralph/@fix_plan.md) - Ralph 任务计划
 
-【reload】重新读取 CLAUDE.md
 
 
 
-## 对外依赖
-
-百度搜索接口资料参考：
-D:\workspace\cybcortex\1技能库\doc
-
-财经接口调用：
-D:\量化研究\数据管理\A股相关数据采集
-
-
-## 其他
-
-当用户要求保存重要谈话内容时，总结当前上下文，以【话题+yymmdd】生成文件，保存到 临时话题\ 目录下。

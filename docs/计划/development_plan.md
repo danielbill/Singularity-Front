@@ -78,8 +78,6 @@ singularity-front/
 - [x] 实现 9 个新闻源解析器（参考消息、澎湃、36氪、凤凰、头条、华尔街见闻x2、财联社x2）
 - [x] 测试通过 - 38 passed
 
-### 阶段 3：公司档案模块 ⊘ (已跳过)
-- 决定跳过此阶段，专注新闻抓取核心功能
 
 ### 阶段 4：定时任务 ✅ (已完成)
 **目标**：实现自动定时抓取，减少手动触发
@@ -97,21 +95,8 @@ singularity-front/
 4. [x] 可手动暂停/恢复定时任务
 5. [x] 测试通过（38个测试）
 
-### 阶段 5：财报数据模块
-- 财经 API 集成
-- 财报存储和查询
 
-### 阶段 6：前端优化
-- 更好的 UI/UX
-- 图谱式关联展示
-- 搜索和筛选
-
-### 阶段 7：部署
-- Docker 容器化
-- 日志和监控
-- 生产环境配置
-
-### 阶段 8：管理功能 ✅ (已完成)
+### 阶段 5：管理功能 ✅ (已完成)
 **目标**：提供系统管理和维护工具
 
 **已完成功能**：
@@ -157,28 +142,6 @@ singularity-front/
 
 ## 配置文件详细设计
 
-### config/legend.yaml - 奇点人物档案
-```yaml
-legends:
-  - id: "musk"
-    name: "Elon Musk"
-    name_cn: "马斯克"
-    tier: "singularity"
-    company_id: "TSLA"
-    role: "CEO"
-```
-
-### config/company.yaml - 公司档案
-```yaml
-companies:
-  - id: "TSLA"
-    name: "Tesla, Inc."
-    name_cn: "特斯拉"
-    tier: 1
-    type: "singularity"
-    legend_id: "musk"
-```
-
 ### config/news_keywords.yaml - 新闻筛选关键词
 ```yaml
 people:
@@ -210,55 +173,6 @@ network:
   retry: 3
 ```
 
----
-
-## 阶段 1：快速迭代 Demo - 详细任务
-
-### 轮次 1：配置系统 ✅ (已完成)
-- [x] 创建 `src/config/` 模块
-- [x] 实现配置数据模型
-- [x] 实现配置读取器
-- [x] 创建 5 个 YAML 配置文件
-- [x] 测试通过 (8 passed)
-
-### 轮次 2：新闻抓取模块 (当前)
-- [ ] 修复 `src/crawlers/base.py`
-  - [ ] 移除硬编码 KEYWORDS
-  - [ ] 集成 ConfigReader 读取 news_keywords.yaml
-  - [ ] 更新 filter_keywords 方法
-
-- [ ] 完善 `src/crawlers/cankaoxiaoxi.py`
-  - [ ] 集成配置读取
-  - [ ] 实现完整数据解析
-
-- [ ] 实现爬虫存储功能
-  - [ ] 在 BaseCrawler 中添加 save_article() 方法
-  - [ ] 保存文章元数据到 TimelineDB
-  - [ ] 保存文章正文到 .md 文件
-  - [ ] 实现入库前查重（按 URL 和标题）
-
-- [ ] 修复测试文件
-  - [ ] 修复 tests/conftest.py 中的 Path mock 问题
-  - [ ] 更新 tests/test_crawlers.py
-
-### 轮次 3：抓取 API
-- [ ] 创建 `src/api/crawl.py`
-- [ ] POST `/api/crawl/trigger` - 手动触发抓取
-- [ ] 返回抓取结果统计（抓取数、筛选数、入库数）
-- [ ] 集成到 main.py
-
-### 轮次 4：前端页面
-- [ ] 创建 `templates/index.html`
-- [ ] 顶部添加"立即抓取"按钮
-- [ ] 显示当日新闻列表
-- [ ] 无新闻时显示"今日暂无相关新闻"
-- [ ] 有新闻时显示标题、来源、时间
-
-### 轮次 5：集成测试
-- [ ] 启动服务验证
-- [ ] 点击抓取按钮测试
-- [ ] 验证查重功能
-- [ ] 验证页面刷新展示
 
 ---
 
