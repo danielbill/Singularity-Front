@@ -47,7 +47,9 @@
       "Skill(mybrowser)",
       "Bash(git rm:*)",
       "Bash(git remote set-url:*)",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "mcp__context7__query-docs",
+      "Bash(pip install:*)"
     ]
   }
 }

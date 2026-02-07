@@ -15,6 +15,11 @@ from .api.biz import router as biz_router
 from .scheduler import SchedulerManager
 from .crawlers.dedup import today_news_cache
 
+# FastAPI Cache
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
+from fastapi_cache.decorator import cache
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -25,6 +30,9 @@ async def lifespan(app: FastAPI):
 
     # 从数据库加载缓存（防止重启后重复抓取）
     today_news_cache.init_from_db(db, limit=100)
+
+    # 初始化 FastAPI Cache（内存后端）
+    FastAPICache.init(InMemoryBackend(), prefix="sfapi-cache")
 
     # 初始化并启动调度器
     scheduler = SchedulerManager(config_dir="config")
@@ -106,6 +114,7 @@ async def health():
 
 
 @app.get("/api/articles/today")
+@cache(expire=30)
 async def list_articles_today(limit: int = 100, legend: str = None):
     """获取今日及以后的新闻"""
     # 使用北京时间（UTC+8）获取今日日期
@@ -122,6 +131,7 @@ async def list_articles_today(limit: int = 100, legend: str = None):
 
 
 @app.get("/api/articles/latest")
+@cache(expire=60)
 async def list_articles_latest(limit: int = 100, legend: str = None):
     """获取最新新闻（不限日期）"""
     db = TimelineDB()
@@ -135,6 +145,7 @@ async def list_articles_latest(limit: int = 100, legend: str = None):
 
 
 @app.get("/api/articles")
+@cache(expire=120)
 async def list_articles(limit: int = 100, years: int = 1, legend: str = None,
                        start_date: str = None, end_date: str = None):
     """获取文章列表（高级查询）

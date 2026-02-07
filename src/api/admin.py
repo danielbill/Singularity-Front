@@ -14,6 +14,7 @@ from ..crawlers.dedup import today_news_cache
 from ..crawlers.url_cache import url_cache
 from ..crawlers.source_tester import SourceTester
 from ..storage.timeline_db import TimelineDB
+from fastapi_cache import FastAPICache
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -69,3 +70,31 @@ async def test_sources() -> Dict[str, Any]:
         }
     finally:
         await tester.close()
+
+
+@router.get("/cache/stats")
+async def get_cache_stats() -> Dict[str, Any]:
+    """获取 API 缓存统计"""
+    # fastapi-cache 的 InMemoryBackend 不直接提供统计接口
+    # 返回基本信息
+    backend = FastAPICache.get_backend()
+    return {
+        "code": 200,
+        "data": {
+            "backend": type(backend).__name__,
+            "prefix": "sfapi-cache",
+            "note": "InMemoryBackend does not provide detailed stats"
+        }
+    }
+
+
+@router.post("/cache/clear")
+async def clear_api_cache() -> Dict[str, Any]:
+    """清除 API 缓存"""
+    # 清空所有缓存
+    await FastAPICache.clear()
+    return {
+        "code": 200,
+        "message": "已清除 API 缓存",
+        "data": {"cleared": True}
+    }
