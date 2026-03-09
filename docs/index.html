@@ -301,7 +301,7 @@
             z-index: 0;
             transition: opacity 0.3s ease;
             
-            background-image: url('./static/images/legend/musk.png');
+            background-image: url('./static/images/legend/anthropic.png');
             
         }
 
@@ -508,10 +508,19 @@
         <!-- 左侧：时间线大卡片（有 legend 的新闻） -->
         <article class="timeline-card" id="timelineCard">
             
-                <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
-                    <div></div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-meta">
+                        <span class="timeline-source news-source">wallstreetcn-news</span>
+                        <span class="timeline-time news-time">03-09 01:56</span>
+                        
+                        <span class="timeline-tag news-tag">anthropic</span>
+                        
+                    </div>
+                    <h3 class="timeline-title"><a href="https://wallstreetcn.com/charts/41958701" target="_blank">Claude“大红大紫”</a></h3>                   
                 </div>
+                
             
         </article>
 
@@ -519,6 +528,38 @@
         <aside>
             <div class="trending-list" id="trendingList">
                 
+                    
+                    <article class="trending-card" onclick="window.open('https://www.36kr.com/newsflashes/3715174552793219', '_blank')">
+                        <h3 class="trending-title">淘宝闪购官宣与2026F1中国大奖赛达成合作，“橙意计划”特邀20余位城市骑士到场观赛</h3>      
+                        <div class="trending-meta">
+                            <span class="trending-source news-source">36kr</span>
+                            <span class="trending-time news-time">03-09 03:51</span>
+                        </div>
+                    </article>
+                    
+                    <article class="trending-card" onclick="window.open('https://www.36kr.com/newsflashes/3715141733888134', '_blank')">
+                        <h3 class="trending-title">2026年中国电影票房在全球占比超28%，领跑全球电影市场</h3>      
+                        <div class="trending-meta">
+                            <span class="trending-source news-source">36kr</span>
+                            <span class="trending-time news-time">03-09 03:39</span>
+                        </div>
+                    </article>
+                    
+                    <article class="trending-card" onclick="window.open('https://wallstreetcn.com/articles/3766997', '_blank')">
+                        <h3 class="trending-title">首次覆盖鸣鸣很忙与万辰集团，高盛：折扣店正“结构性改变”中国零售</h3>      
+                        <div class="trending-meta">
+                            <span class="trending-source news-source">wallstreetcn-news</span>
+                            <span class="trending-time news-time">03-09 01:52</span>
+                        </div>
+                    </article>
+                    
+                    <article class="trending-card" onclick="window.open('https://wallstreetcn.com/articles/3767002', '_blank')">
+                        <h3 class="trending-title">创近三年来最高！中国2月CPI同比涨幅扩大至1.3%，PPI同比降幅持续收窄至0.9%</h3>      
+                        <div class="trending-meta">
+                            <span class="trending-source news-source">wallstreetcn-news</span>
+                            <span class="trending-time news-time">03-09 01:45</span>
+                        </div>
+                    </article>
                     
                     <article class="trending-card" onclick="window.open('https://wallstreetcn.com/livenews/3066040', '_blank')">
                         <h3 class="trending-title">提醒：北京时间09:30将公布中国2月CPI和PPI。</h3>      
